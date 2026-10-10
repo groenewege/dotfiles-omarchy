@@ -14,6 +14,9 @@ for pkg in "$DOTFILES"/stow/*/; do
   stow_package "$(basename "$pkg")"
 done
 
+# Hyprland doesn't notice bindings.lua being replaced by a symlink.
+if have hyprctl && hyprctl reload >/dev/null 2>&1; then ok "Hyprland reloaded"; fi
+
 # Bash: Omarchy's ~/.bashrc stays as it is; we only append one line.
 # Lines that installers (Lerd, worktrunk...) append end up there too, not in this repo.
 ensure_line "$HOME/.bashrc" '[[ -f ~/.config/bash/init.sh ]] && source ~/.config/bash/init.sh'
