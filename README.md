@@ -15,6 +15,7 @@ settings on top, so `omarchy-update` keeps working and the repo stays small.
 | Prompt | Omarchy's starship prompt + PHP version, command duration, exit code, ahead/behind |
 | Terminal | foot (Omarchy default, Super+Return) and Ghostty (Super+Alt+Return) |
 | Theme | Nord, set once (pick another from the Omarchy menu any time) |
+| Keyboard / trackpad | French Mac AZERTY (also on the login screen), natural scrolling |
 | Editor | Zed, installed through Omarchy (omazed keeps its theme in sync) |
 | PHP / MySQL | [Lerd](https://lerd.sh): PHP 8.3, MySQL, `https://<project>.test` for every folder in `~/Sites` |
 | AI | Claude Code, Codex (Omarchy's auto-updating stubs), my skills and plugins, herdr + herdr-plus, worktrunk |
@@ -106,13 +107,14 @@ packages/                  plain lists, read by the scripts
 scripts/
   10-packages.sh           install pacman.txt and aur.txt
   20-cleanup.sh            remove webapps-remove.txt and remove.txt
-  30-desktop.sh            Zed, 1Password, web apps, Gmail as mailto handler, theme
+  30-desktop.sh            Zed, 1Password, web apps, Gmail as mailto handler, login screen keyboard, theme
   40-link.sh               stow everything in stow/, hook into Omarchy-owned files
   50-dev.sh                Lerd, PHP 8.3, MySQL, park ~/Sites, global Composer tools
   60-ai.sh                 skills, Claude plugins, Codex config, herdr plugin + integrations
   70-ssh-github.sh         SSH key + agent, gh login, upload auth and signing key
 stow/<package>/            files laid out as in $HOME, symlinked with GNU stow
 config/herdr.toml          block appended to Omarchy's herdr config
+config/sddm/               login screen (SDDM) keyboard layout, copied to /etc
 ai/AGENTS.md               shared instructions → ~/.claude/CLAUDE.md and ~/.codex/AGENTS.md
 ai/skills/                 skills for both Claude Code and Codex
 ai/skills-claude/          Claude-only variants
@@ -136,7 +138,14 @@ signing with `~/.ssh/id_ed25519`, which `ssh-github` creates.
    - `~/.bashrc` gets `source ~/.config/bash/init.sh` (one line, at the end).
    - `~/.config/git/config` gets `[include] path = dotfiles.gitconfig`.
    - `~/.config/herdr/config.toml` gets a marked block from `config/herdr.toml`.
-   - Hyprland loads our `~/.config/hypr/bindings.lua` itself.
+   - Hyprland loads our `~/.config/hypr/bindings.lua` and `input.lua` itself
+     (Omarchy only puts commented examples in them).
+   - The login screen: SDDM runs its own Hyprland with Omarchy's
+     `/usr/share/sddm/hyprland.lua`, which sets no keyboard layout. The
+     `desktop` step copies `config/sddm/hyprland.lua` (Omarchy's file plus our
+     layout) to `/etc/sddm/` and points SDDM at it with
+     `/etc/sddm.conf.d/20-dotfiles-keyboard.conf`. Change the layout in both
+     `input.lua` and that file.
 
    Installers (Lerd, worktrunk…) also append to `~/.bashrc`. That is fine:
    those lines stay on this machine and don't end up in the repo.

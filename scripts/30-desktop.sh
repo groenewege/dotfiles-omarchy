@@ -58,6 +58,30 @@ if [[ -f "$apps_dir/Gmail.desktop" && $(xdg-mime query default x-scheme-handler/
   ok "Gmail now opens mailto: links"
 fi
 
+# Login screen keyboard. SDDM runs its own Hyprland with Omarchy's
+# /usr/share/sddm/hyprland.lua, which sets no layout (so: US QWERTY). Point it at
+# config/sddm/hyprland.lua, which loads Omarchy's file and adds our layout.
+# The override reuses Omarchy's CompositorCommand with only the config path
+# swapped, and is skipped if that command no longer looks as expected.
+greeter_src="$DOTFILES/config/sddm/hyprland.lua"
+greeter_dest=/etc/sddm/dotfiles-hyprland.lua
+greeter_conf=/etc/sddm.conf.d/20-dotfiles-keyboard.conf
+omarchy_greeter=/usr/share/sddm/hyprland.lua
+compositor=$(grep -h '^CompositorCommand=' /etc/sddm.conf.d/10-wayland.conf 2>/dev/null | tail -1 || true)
+if [[ $compositor == *"--config $omarchy_greeter"* ]]; then
+  if ! cmp -s "$greeter_src" "$greeter_dest"; then
+    sudo install -Dm644 "$greeter_src" "$greeter_dest"
+  fi
+  conf=$(printf '# Installed by dotfiles (scripts/30-desktop.sh). Overrides 10-wayland.conf.\n[Wayland]\n%s\n' \
+    "${compositor/"--config $omarchy_greeter"/--config $greeter_dest}")
+  if [[ $(cat "$greeter_conf" 2>/dev/null) != "$conf" ]]; then
+    printf '%s\n' "$conf" | sudo tee "$greeter_conf" >/dev/null
+  fi
+  ok "login screen uses the keyboard layout from $(pretty "$greeter_src")"
+else
+  warn "SDDM's compositor command changed; login screen keyboard not set (check /etc/sddm.conf.d/10-wayland.conf)"
+fi
+
 # Theme. Only set it once, so a theme picked later from the Omarchy menu sticks.
 theme_marker="$HOME/.local/state/dotfiles/theme-set"
 if [[ -f $theme_marker ]]; then
