@@ -1,4 +1,4 @@
-# Included at the end of Omarchy's ~/.config/git/config (see scripts/30-link.sh),
+# Included at the end of Omarchy's ~/.config/git/config (see scripts/40-link.sh),
 # so these settings win over Omarchy's defaults.
 
 [user]

@@ -58,12 +58,22 @@ ensure_block() {
   rm -f "$tmp"
 }
 
+# A free path in the backup dir for <rel>; a name that is already taken gets a
+# .1, .2... suffix, so a backup never overwrites an earlier one.
+backup_dest() {
+  local dest="$BACKUP_DIR/$1" n=1
+  while [[ -e $dest || -L $dest ]]; do dest="$BACKUP_DIR/$1.$((n++))"; done
+  mkdir -p "$(dirname "$dest")"
+  printf '%s' "$dest"
+}
+
 # Move a file out of the way into the backup dir (keeps its path under $HOME).
 backup() {
-  local target=$1 rel=${1#"$HOME"/}
-  mkdir -p "$BACKUP_DIR/$(dirname "$rel")"
-  mv "$target" "$BACKUP_DIR/$rel"
-  warn "backed up ~/$rel to $(pretty "$BACKUP_DIR")/$rel"
+  local target=$1 dest
+  dest=$(backup_dest "${1#"$HOME"/}")
+  mv -n "$target" "$dest"
+  [[ -e $target || -L $target ]] && die "could not back up $(pretty "$target")"
+  warn "backed up $(pretty "$target") to $(pretty "$dest")"
 }
 
 # Symlink every file of stow/<pkg> into $HOME. Existing files that are not
@@ -87,6 +97,8 @@ stow_package() {
 relink_if_replaced() {
   local pkg=$1 rel=$2 target="$HOME/$2" src="$DOTFILES/stow/$1/$2"
   if [[ -f $target && ! -L $target ]]; then
+    # Keep the repo's version too, in case it had uncommitted edits.
+    cp -p "$src" "$(backup_dest "dotfiles-repo/stow/$pkg/$rel")"
     cp "$target" "$src"
     rm "$target"
     stow --dir "$DOTFILES/stow" --target "$HOME" --no-folding --restow "$pkg"

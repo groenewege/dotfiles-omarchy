@@ -17,7 +17,7 @@ else
 fi
 
 # 2. Agent: gcr-ssh-agent asks for the passphrase in a dialog and can remember
-#    it in the keyring. Same setup as Omarchy's newer omarchy-setup-security-ssh-agent.
+#    it in the keyring (Omarchy itself sets up no SSH agent).
 systemctl --user enable --now gcr-ssh-agent.socket
 agent_env="$HOME/.config/environment.d/90-gcr-ssh-agent.conf"
 if [[ -f $agent_env ]]; then

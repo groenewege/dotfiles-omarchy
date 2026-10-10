@@ -51,11 +51,14 @@ fi
 
 # Lerd site: the first time, `lerd init` asks for PHP version, HTTPS and
 # services and saves the answers in .lerd.yaml (commit it). With a .lerd.yaml,
-# `lerd link` applies it without asking.
+# `lerd link` applies it without asking. Both end by offering `lerd setup`,
+# which would repeat the steps below; without a terminal on stdin, link skips
+# that question.
 step "Lerd site"
 if [[ -f .lerd.yaml ]]; then
-  lerd link
+  lerd link </dev/null
 else
+  note "At the end, answer N to \"Run lerd setup?\": this script does those steps itself."
   lerd init
 fi
 
@@ -68,6 +71,18 @@ lerd env
 if ! grep -qE '^APP_KEY=.+' .env; then
   step "Generating app key"
   php artisan key:generate
+fi
+
+# migrate:fresh empties the database, so only run it against Lerd's own MySQL
+# (or a local SQLite file). DB_URL would win over DB_HOST, and lerd env leaves it alone.
+env_value() { grep -E "^$1=" .env | tail -1 | cut -d= -f2- | tr -d "\"'" || true; }
+db_url=${DB_URL:-$(env_value DB_URL)}
+db_connection=${DB_CONNECTION:-$(env_value DB_CONNECTION)}
+db_host=${DB_HOST:-$(env_value DB_HOST)}
+if [[ -n $db_url ]]; then
+  die "DB_URL is set: refusing migrate:fresh. Remove it so Lerd's database is used."
+elif [[ $db_connection != sqlite && ! $db_host =~ ^(lerd-[a-z0-9-]+|127\.0\.0\.1|localhost)$ ]]; then
+  die "DB_HOST is '$db_host', not Lerd's MySQL: refusing migrate:fresh."
 fi
 
 step "Database: migrate:fresh --seed"

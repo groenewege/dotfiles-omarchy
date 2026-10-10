@@ -61,7 +61,12 @@ The `ssh-github` step switches this clone to SSH later, so you can push from it.
 It asks for your sudo password once, then runs every step in `scripts/`.
 Expect these prompts:
 
-- **Lerd installer**: answer **Y** to let Lerd manage DNS (sites at `https://<name>.test`).
+- **Lerd installer** (several questions, and sudo for its system setup):
+  - **Y** to let Lerd manage DNS (sites at `https://<name>.test`).
+  - **Y** to let Lerd manage Node.js versions. Otherwise `node` stays mise's,
+    not Lerd's.
+  - **Y** to the TLD question, **N** to the Lerd desktop app (or Y if you want it).
+  - It also adds a Lerd item to the Omarchy bar.
 - **SSH key passphrase**: choose one. The agent can remember it in the keyring.
 - **GitHub login**: a browser window opens for `gh auth login` (SSH this time)
   with permission to add your SSH key.
@@ -118,6 +123,8 @@ docs/                      first-install guide and the audit prompt for agents
 
 Every step checks before acting, so `./install.sh` can be run again at any
 time. Run one step with `./install.sh --only link` (names: `./install.sh --list`).
+When you go step by step, run `ssh-github` before `link`: `link` turns on commit
+signing with `~/.ssh/id_ed25519`, which `ssh-github` creates.
 
 ### Two ways of managing a config file
 
@@ -242,10 +249,13 @@ setup-project                        # set up the project in the current folder
 2. Copy `.env.example` to `.env` when there's no `.env` yet.
 3. `lerd init` the first time: it asks for the PHP version, HTTPS and services,
    and saves the answers in `.lerd.yaml`. Commit that file; next time (or on
-   another machine) `lerd link` applies it without asking.
+   another machine) `lerd link` applies it without asking. Answer **N** when
+   `lerd init` offers "Run lerd setup?": the next steps do that work.
 4. `composer install`, `lerd env` (points `.env` at Lerd's MySQL etc.), and
    `php artisan key:generate` when `APP_KEY` is empty.
-5. `php artisan migrate:fresh --seed` (this empties the database first).
+5. `php artisan migrate:fresh --seed` (this empties the database first). It
+   refuses to run when `DB_URL` is set, or when `DB_HOST` isn't Lerd's MySQL
+   (`lerd-*`, `127.0.0.1`, `localhost`) and the project doesn't use SQLite.
 6. `php artisan storage:link`.
 7. `npm ci` (or `npm install`), then `npm run build`, or `npm run production` for older Mix projects.
 8. `php artisan boost:install`, when the project requires `laravel/boost`.

@@ -8,7 +8,6 @@ model_reasoning_effort = "high"
 
 [features]
 hooks = true
-js_repl = false
 
 # Laravel Boost MCP server (runs in the current Laravel project)
 [mcp_servers.laravel-boost]

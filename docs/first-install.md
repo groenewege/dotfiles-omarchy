@@ -69,7 +69,11 @@ Run the steps in the order the report recommends, checking after each one:
 ./install.sh --only packages  # one step at a time, in the recommended order
 ```
 
-or everything at once with `./install.sh`. The prompts to expect, and the
+Run `ssh-github` before `link`: `link` turns on commit signing, and
+`ssh-github` creates the key it signs with. Log out and back in after `link`, so
+the SSH agent is used everywhere.
+
+Or run everything at once with `./install.sh`. The prompts to expect, and the
 by-hand checklist afterwards, are in the
 [README](../README.md#3-run-the-installer).
 

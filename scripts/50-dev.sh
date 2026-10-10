@@ -25,6 +25,10 @@ fi
 lerd start
 lerd use "$PHP_VERSION"
 lerd service start mysql
+# `lerd install` only writes client shims for services that already exist, and
+# mysql didn't yet. The db function and setup-project need these.
+lerd shims add mysql
+lerd shims add mysqldump
 ok "Lerd running with PHP $PHP_VERSION and MySQL"
 
 mkdir -p "$SITES_DIR"

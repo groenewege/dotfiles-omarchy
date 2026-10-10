@@ -1,4 +1,4 @@
-# Appended to Omarchy's ~/.config/herdr/config.toml by scripts/30-link.sh.
+# Appended to Omarchy's ~/.config/herdr/config.toml by scripts/40-link.sh.
 # Don't redefine tables Omarchy's file already has (e.g. [ui], [keys]); TOML
 # rejects a table defined twice. Add keys to those with [[keys.command]] or
 # dotted subtables like [ui.toast] instead.

@@ -45,7 +45,7 @@ while IFS= read -r repo; do
   fi
 done < <(list_from "$DOTFILES/packages/claude-marketplaces.txt")
 
-installed=$(claude plugin list --json | jq -r '.[].id')
+installed=$(claude plugin list --json | jq -r '.[] | .id // .pluginId // empty')
 while IFS= read -r plugin; do
   if grep -qxF "$plugin" <<<"$installed"; then
     ok "plugin already installed: $plugin"
