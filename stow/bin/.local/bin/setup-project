@@ -5,12 +5,14 @@
 #   setup-project <git-url> [folder]    clone any git URL, then set up
 #   setup-project                       set up the project in the current folder
 #
-# Steps: .env from .env.example, Lerd site config (wizard the first time),
+# Steps: .env from .env.example, PHP 8.3 pin (unless the project picks a
+# version), Lerd site config (wizard the first time),
 # composer install, lerd env, app key, migrate:fresh --seed, storage:link,
 # npm install + build, boost:install (when laravel/boost is required).
 set -euo pipefail
 
 SITES_DIR="$HOME/Sites"
+PHP_VERSION="8.3"   # same as scripts/50-dev.sh
 
 step() { printf '\n\033[1;34m==>\033[0m \033[1m%s\033[0m\n' "$*"; }
 note() { printf '  %s\n' "$*"; }
@@ -47,6 +49,17 @@ elif [[ -f .env.example ]]; then
   note "copied .env.example to .env"
 else
   die "No .env or .env.example to start from."
+fi
+
+# PHP version: Lerd uses .lerd.yaml's php_version, then .php-version, then the
+# highest installed PHP that composer.json allows (so 8.5 for "^8.3"). Pin our
+# default unless the project already chose. isolate refuses a version that
+# composer.json rules out; Lerd's own choice stands then.
+step "PHP version"
+if [[ -f .php-version ]] || grep -qE '^php_version:' .lerd.yaml 2>/dev/null; then
+  note "the project sets its own PHP version, keeping it"
+elif ! lerd isolate "$PHP_VERSION"; then
+  note "PHP $PHP_VERSION doesn't fit this project; Lerd picks the version"
 fi
 
 # Lerd site: the first time, `lerd init` asks for PHP version, HTTPS and

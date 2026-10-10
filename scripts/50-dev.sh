@@ -33,7 +33,7 @@ ok "Lerd running with PHP $PHP_VERSION and MySQL"
 
 mkdir -p "$SITES_DIR"
 lerd park "$SITES_DIR"
-ok "projects in $(pretty "$SITES_DIR") are served at https://<folder>.test"
+ok "projects in $(pretty "$SITES_DIR") are served at http://<folder>.test (lerd secure for HTTPS)"
 
 # With a terminal on stdin, Lerd's composer shim adds colours and \r\n line
 # endings, so read the list without one.

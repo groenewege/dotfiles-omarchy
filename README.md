@@ -17,7 +17,7 @@ settings on top, so `omarchy-update` keeps working and the repo stays small.
 | Theme | Nord, set once (pick another from the Omarchy menu any time) |
 | Keyboard / trackpad | French Mac AZERTY (also on the login screen), natural scrolling |
 | Editor | Zed, installed through Omarchy (omazed keeps its theme in sync) |
-| PHP / MySQL | [Lerd](https://lerd.sh): PHP 8.3, MySQL, `https://<project>.test` for every folder in `~/Sites` |
+| PHP / MySQL | [Lerd](https://lerd.sh): PHP 8.3, MySQL, `http://<project>.test` for every folder in `~/Sites` (HTTPS with `lerd secure`) |
 | AI | Claude Code, Codex (Omarchy's auto-updating stubs), my skills and plugins, herdr + herdr-plus, worktrunk |
 | Apps | 1Password, Gmail and Notion web apps; HEY and Basecamp removed |
 | Git / SSH | ed25519 key, GitHub over SSH, signed commits; server list in a private file |
@@ -243,7 +243,7 @@ personal, so they aren't in the repo. Start from `templates/herdr-project.toml`.
 
 Lerd runs nginx, PHP-FPM and MySQL in rootless Podman containers and puts
 `php`, `composer`, `node` and `mysql` shims in `~/.local/share/lerd/bin` (first
-on `PATH`). Every folder in `~/Sites` is served at `https://<folder>.test`.
+on `PATH`). Every folder in `~/Sites` is served at `http://<folder>.test`, and over HTTPS after `lerd secure`.
 
 ### Setting up a project
 
@@ -256,18 +256,22 @@ setup-project                        # set up the project in the current folder
 
 1. Clone with `gh repo clone` (or `git clone` for a URL), unless you're already in the project.
 2. Copy `.env.example` to `.env` when there's no `.env` yet.
-3. `lerd init` the first time: it asks for the PHP version, HTTPS and services,
+3. `lerd isolate 8.3`, unless the project already picks a version
+   (`.php-version`, or `php_version` in `.lerd.yaml`). Without it Lerd takes the
+   highest installed PHP that `composer.json` allows: 8.5 for `"^8.3"`. When
+   8.3 doesn't fit the project, Lerd's choice stays.
+4. `lerd init` the first time: it asks for the PHP version, HTTPS and services,
    and saves the answers in `.lerd.yaml`. Commit that file; next time (or on
    another machine) `lerd link` applies it without asking. Answer **N** when
    `lerd init` offers "Run lerd setup?": the next steps do that work.
-4. `composer install`, `lerd env` (points `.env` at Lerd's MySQL etc.), and
+5. `composer install`, `lerd env` (points `.env` at Lerd's MySQL etc.), and
    `php artisan key:generate` when `APP_KEY` is empty.
-5. `php artisan migrate:fresh --seed` (this empties the database first). It
+6. `php artisan migrate:fresh --seed` (this empties the database first). It
    refuses to run when `DB_URL` is set, or when `DB_HOST` isn't Lerd's MySQL
    (`lerd-*`, `127.0.0.1`, `localhost`) and the project doesn't use SQLite.
-6. `php artisan storage:link`.
-7. `npm ci` (or `npm install`), then `npm run build`, or `npm run production` for older Mix projects.
-8. `php artisan boost:install`, when the project requires `laravel/boost`.
+7. `php artisan storage:link`.
+8. `npm ci` (or `npm install`), then `npm run build`, or `npm run production` for older Mix projects.
+9. `php artisan boost:install`, when the project requires `laravel/boost`.
 
 Lerd's own `lerd setup` does something similar with a checklist, but it runs
 `migrate` instead of `migrate:fresh --seed` and doesn't install Boost.
@@ -281,6 +285,22 @@ lerd doctor          # diagnose
 ```
 
 Lerd also serves git worktrees automatically at `<branch>.<site>.test`.
+
+### A new project
+
+`laravel new` doesn't know about Lerd: it writes `DB_HOST=127.0.0.1` with an
+empty password and tries to migrate, which fails. Fix it up afterwards:
+
+```bash
+laravel new my-app --database=mysql --pest --npm --no-boost
+cd my-app
+lerd isolate 8.3      # or setup-project, which does all of this
+lerd env              # DB_HOST=lerd-mysql; creates the database and its _testing copy
+php artisan migrate   # before optimize:clear: the cache table lives in the database
+```
+
+`lerd env` also starts Mailpit (and Redis when `.env` mentions it). A
+parked folder is served over plain `http://my-app.test`; `lerd secure` adds HTTPS.
 
 Don't install PHP any other way (mise, `omarchy-install-dev-env php|laravel`):
 it would take `php` away from Lerd. `which php` should print
