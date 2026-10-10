@@ -1,0 +1,21 @@
+#!/bin/bash
+# Runs after `omarchy-update`. Some Omarchy migrations rewrite config files with
+# `sed -i` or `mv`, which replaces our symlinks with plain copies. List the
+# files that are no longer linked to the dotfiles repo.
+
+dotfiles=$(readlink -f ~/.config/bash/init.sh)
+dotfiles=${dotfiles%/stow/bash/*}
+[[ -d $dotfiles/stow ]] || exit 0
+
+broken=()
+while IFS= read -r -d '' src; do
+  rel=${src#"$dotfiles"/stow/*/}
+  # shellcheck disable=SC2088 # "~/" is only for display
+  [[ $(readlink -f "$HOME/$rel") == "$(readlink -f "$src")" ]] || broken+=("~/$rel")
+done < <(find "$dotfiles/stow" -mindepth 2 \( -type f -o -type l \) ! -name .DS_Store -print0)
+
+if ((${#broken[@]})); then
+  printf 'Dotfiles: no longer linked to the repo:\n  %s\n' "${broken[@]}"
+  echo "Compare with the repo, then run: $dotfiles/install.sh --only link"
+  notify-send -u normal "Dotfiles" "${#broken[@]} config file(s) are no longer linked. Run: install.sh --only link" 2>/dev/null || true
+fi

@@ -1,0 +1,7 @@
+# Claude Code plugins (plugin@marketplace), installed with `claude plugin install`.
+
+frontend-design@claude-plugins-official
+skill-creator@claude-plugins-official
+mattpocock-skills@claude-plugins-official
+shift@laravel-shift
+notion-workspace-plugin@notion-plugin-marketplace

@@ -1,0 +1,85 @@
+{
+  "auto_install_extensions": {
+    "php": true,
+    "laravel-official": true,
+    "emmet": true,
+    "html": true,
+    "git-firefly": true
+  },
+  "title_bar": {
+    "show_onboarding_banner": true,
+    "show_project_items": true,
+    "show_worktree_name": false,
+    "show_branch_status_icon": false
+  },
+  "status_bar": {
+    "show_active_file": false
+  },
+  "diagnostics": {
+    "button": false
+  },
+  "diff_view_style": "split",
+  "agent": {
+    "default_profile": "ask"
+  },
+  "agent_servers": {
+    "codex-acp": {
+      "type": "registry"
+    },
+    "claude-acp": {
+      "type": "registry"
+    }
+  },
+  "languages": {
+    "PHP": {
+      "language_servers": [
+        "laravel-lsp",
+        "!intelephense",
+        "!phpactor",
+        "!phptools",
+        "..."
+      ],
+      "show_completions_on_input": true,
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "vendor/bin/pint",
+          "arguments": [
+            "--stdin-filename",
+            "{buffer_path}"
+          ]
+        }
+      }
+    }
+  },
+  "tab_bar": {
+    "show_tab_bar_buttons": false,
+    "show_nav_history_buttons": false
+  },
+  "tabs": {
+    "git_status": false,
+    "file_icons": false
+  },
+  "collaboration_panel": {
+    "button": false
+  },
+  "debugger": {
+    "button": false
+  },
+  "git": {
+    "inline_blame": {
+      "enabled": false
+    }
+  },
+  "project_panel": {
+    "default_width": 240.0,
+    "file_icons": true,
+    "dock": "right",
+    "button": true
+  },
+  "buffer_line_height": "comfortable",
+  "buffer_font_family": "JetBrainsMono Nerd Font",
+  "buffer_font_size": 15,
+  "ui_font_size": 16,
+  "theme": "Omazed"
+}

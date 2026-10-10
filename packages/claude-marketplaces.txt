@@ -1,0 +1,6 @@
+# Claude Code plugin marketplaces (GitHub owner/repo), added with
+# `claude plugin marketplace add`. The official Anthropic one is built in.
+
+laravel-shift/shift-ai
+makenotion/claude-code-notion-plugin
+laravel/agent-skills

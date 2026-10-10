@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+# Clone a Laravel project into ~/Sites and get it running on Lerd.
+#
+#   setup-project owner/repo [folder]   clone from GitHub, then set up
+#   setup-project <git-url> [folder]    clone any git URL, then set up
+#   setup-project                       set up the project in the current folder
+#
+# Steps: .env from .env.example, Lerd site config (wizard the first time),
+# composer install, lerd env, app key, migrate:fresh --seed, storage:link,
+# npm install + build, boost:install (when laravel/boost is required).
+set -euo pipefail
+
+SITES_DIR="$HOME/Sites"
+
+step() { printf '\n\033[1;34m==>\033[0m \033[1m%s\033[0m\n' "$*"; }
+note() { printf '  %s\n' "$*"; }
+die()  { printf '\033[31m%s\033[0m\n' "$*" >&2; exit 1; }
+
+case ${1:-} in
+  -h|--help) sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+esac
+
+# Clone
+if (($#)); then
+  repo=$1
+  folder=${2:-$(basename "${repo%.git}")}
+  dir="$SITES_DIR/$folder"
+  [[ -e $dir ]] && die "$dir already exists. Run setup-project inside it to set it up."
+  mkdir -p "$SITES_DIR"
+  step "Cloning $repo into $dir"
+  if [[ $repo == *:* || $repo == /* ]]; then
+    git clone "$repo" "$dir"
+  else
+    gh repo clone "$repo" "$dir"
+  fi
+  cd "$dir"
+fi
+
+[[ -f artisan ]] || die "No artisan file in $(pwd): not a Laravel project."
+
+# .env
+step ".env"
+if [[ -f .env ]]; then
+  note ".env already exists, keeping it"
+elif [[ -f .env.example ]]; then
+  cp .env.example .env
+  note "copied .env.example to .env"
+else
+  die "No .env or .env.example to start from."
+fi
+
+# Lerd site: the first time, `lerd init` asks for PHP version, HTTPS and
+# services and saves the answers in .lerd.yaml (commit it). With a .lerd.yaml,
+# `lerd link` applies it without asking.
+step "Lerd site"
+if [[ -f .lerd.yaml ]]; then
+  lerd link
+else
+  lerd init
+fi
+
+step "composer install"
+composer install
+
+step "lerd env (database, cache, mail... settings for Lerd's services)"
+lerd env
+
+if ! grep -qE '^APP_KEY=.+' .env; then
+  step "Generating app key"
+  php artisan key:generate
+fi
+
+step "Database: migrate:fresh --seed"
+php artisan migrate:fresh --seed
+
+if [[ -d storage/app/public && ! -e public/storage ]]; then
+  step "storage:link"
+  php artisan storage:link
+fi
+
+if [[ -f package.json ]]; then
+  step "npm install"
+  if [[ -f package-lock.json ]]; then npm ci; else npm install; fi
+
+  if jq -e '.scripts.build' package.json >/dev/null; then
+    step "npm run build"
+    npm run build
+  elif jq -e '.scripts.production' package.json >/dev/null; then
+    step "npm run production"
+    npm run production
+  else
+    note "no build or production script in package.json, skipping the asset build"
+  fi
+fi
+
+if jq -e '(.require + (.["require-dev"] // {})) | has("laravel/boost")' composer.json >/dev/null; then
+  step "Laravel Boost"
+  php artisan boost:install
+else
+  note "laravel/boost is not required by this project, skipping boost:install"
+  note "(add it with: composer require laravel/boost --dev && php artisan boost:install)"
+fi
+
+url=$(grep -E '^APP_URL=' .env | cut -d= -f2- | tr -d '"' || true)
+step "Done: ${url:-https://$(basename "$PWD").test}"

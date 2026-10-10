@@ -1,0 +1,16 @@
+# Codex config, copied to ~/.codex/config.toml once by scripts/60-ai.sh.
+# Codex adds project trust entries and hook hashes to this file itself, which is
+# why it is a template rather than a linked file.
+
+personality = "pragmatic"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "high"
+
+[features]
+hooks = true
+js_repl = false
+
+# Laravel Boost MCP server (runs in the current Laravel project)
+[mcp_servers.laravel-boost]
+command = "php"
+args = ["artisan", "boost:mcp"]

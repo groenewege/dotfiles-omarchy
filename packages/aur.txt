@@ -1,0 +1,4 @@
+# Packages from the AUR, installed with omarchy-pkg-aur-add (yay).
+# One package per line; '#' starts a comment.
+
+worktrunk-bin    # `wt` git worktree manager (AUR is newer than extra/worktrunk)

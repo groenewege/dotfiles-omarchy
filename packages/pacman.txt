@@ -1,0 +1,28 @@
+# Packages from the Arch/Omarchy repos, installed with omarchy-pkg-add.
+# One package per line; '#' starts a comment. Already-installed packages are skipped.
+#
+# Omarchy already ships: starship zoxide fzf bat eza ripgrep fd jq btop lazygit
+# mise docker chromium herdr (and claude/codex/gh as auto-installing mise stubs).
+
+# Dotfiles
+stow
+
+# Modern CLI tools missing from Omarchy
+git-delta        # better git diffs (pager)
+go-yq            # YAML processor (mikefarah's yq; the "yq" package is a different tool)
+bottom           # system monitor (btm)
+bind             # dig, used by the digga function
+wl-clipboard     # wl-copy / wl-paste
+
+# Lerd prerequisites (rootless Podman, mkcert's certutil)
+podman
+crun
+nss
+unzip
+
+# SSH agent with a graphical passphrase prompt (gcr-ssh-agent)
+gcr-4
+
+# Notification sounds for Claude Code hooks
+sound-theme-freedesktop
+libnotify

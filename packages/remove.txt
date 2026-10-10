@@ -1,0 +1,5 @@
+# Preinstalled Omarchy packages to remove, with omarchy-pkg-drop.
+# One package per line; '#' starts a comment. Missing packages are ignored.
+#
+# Candidates: libreoffice-fresh kdenlive obs-studio obsidian pinta xournalpp
+#             moonlight-qt aether cliamp

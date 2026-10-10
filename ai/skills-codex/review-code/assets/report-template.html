@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code review — {{TARGET}}</title>
+<style>
+:root { color-scheme: light dark; --bg:#f5f6f8; --card:#fff; --text:#182230; --muted:#566273; --line:#d9dfe7; --red:#bd2534; --orange:#a95208; --purple:#7b3fa8; --green:#237344; --pill:#edf0f5; }
+@media (prefers-color-scheme:dark) { :root { --bg:#11161e; --card:#1c2430; --text:#edf1f7; --muted:#b1bdcc; --line:#3b4757; --red:#ff7e89; --orange:#ffb66c; --purple:#d29bf0; --green:#83d6a0; --pill:#303d4e; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+main { max-width:1040px; margin:auto; padding:40px 24px 64px; }
+h1,h2,h3,p { margin-top:0; } h1 { font-size:2.1rem; margin-bottom:4px; } h2 { margin-top:32px; font-size:1.4rem; } h3 { font-size:1.05rem; margin:12px 0; }
+.target,code,td,dd { overflow-wrap:anywhere; } .meta,.clean,.skipped { color:var(--muted); }
+.verdict,.tile,.finding,.scope { background:var(--card); border:1px solid var(--line); border-radius:12px; }
+.verdict { padding:20px 24px; border-left:5px solid var(--green); margin:24px 0; } .verdict p { margin:0; }
+.verdict.security { border-left-color:var(--red); } .verdict.spec { border-left-color:var(--purple); } .verdict.correctness { border-left-color:var(--orange); } .verdict.clean { border-left-color:var(--green); }
+.counts { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; } .tile { padding:16px; } .tile strong { display:block; font-size:1.8rem; } .tile span { color:var(--muted); }
+.scope { padding:8px 20px; } table { border-collapse:collapse; width:100%; table-layout:fixed; } th,td { text-align:left; vertical-align:top; border-bottom:1px solid var(--line); padding:12px 0; } th { width:30%; padding-right:16px; } tr:last-child>* { border:0; }
+.findings { list-style:none; padding:0; margin:0; } .finding { padding:20px; margin-bottom:14px; } .finding-head { display:flex; gap:10px; align-items:center; flex-wrap:wrap; } .finding-id { font-weight:750; } .pill { background:var(--pill); border-radius:999px; padding:2px 10px; font-size:.75rem; font-weight:750; letter-spacing:.04em; } .high { color:var(--red); } .medium { color:var(--orange); }
+dl { margin:0; } dt { font-weight:650; margin-top:10px; } dd { margin:2px 0 0; } code { font: .9em/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; } details { margin:14px 0; } summary { cursor:pointer; } summary:focus-visible { outline:2px solid var(--text); outline-offset:4px; } li { overflow-wrap:anywhere; }
+@media (max-width:520px) { main { padding:24px 14px 40px; } .counts { gap:6px; } .tile { padding:10px 6px; } .tile span { font-size:.78rem; } .tile strong { font-size:1.5rem; } .finding,.verdict { padding:16px; } .scope { padding:4px 12px; } th { width:35%; } }
+@media print { body { background:white; color:black; } main { max-width:none; padding:0; } .finding { break-inside:avoid; } }
+</style>
+</head>
+<body>
+<main>
+<header><h1>Code review</h1><p class="target">{{TARGET}}</p><p class="meta"><time datetime="{{DATE_ISO}}">{{DATE}}</time></p></header>
+<section class="verdict {{VERDICT_CLASS}}" aria-label="Verdict"><p>{{VERDICT}}</p></section>
+<div class="counts" aria-label="Finding counts">
+<div class="tile"><strong>{{N_SECURITY}}</strong><span>Security</span></div>
+<div class="tile"><strong>{{N_SPEC}}</strong><span>Spec</span></div>
+<div class="tile"><strong>{{N_CORRECTNESS}}</strong><span>Correctness</span></div>
+<div class="tile"><strong>{{N_CONVENTIONS}}</strong><span>Conventions</span></div>
+</div>
+<section aria-labelledby="scope-title"><h2 id="scope-title">Scope</h2><div class="scope"><table aria-label="Review scope"><tbody>
+<tr><th scope="row">Repository</th><td>{{REPOSITORY}}</td></tr>
+<tr><th scope="row">Mode</th><td>{{MODE}}</td></tr>
+<tr><th scope="row">Target</th><td>{{TARGET}}</td></tr>
+<tr><th scope="row">Files in scope</th><td>{{FILES_IN_SCOPE}}</td></tr>
+<tr><th scope="row">Lanes run</th><td>{{LANES_RUN}}</td></tr>
+<tr><th scope="row">Rule set used</th><td>{{RULE_SET}}</td></tr>
+<tr><th scope="row">Spec</th><td>{{SPEC_SOURCE}}</td></tr>
+</tbody></table></div></section>
+<section aria-labelledby="security-title"><h2 id="security-title">Security</h2>{{SECURITY}}{{SECURITY_SKIPPED}}</section>
+<section aria-labelledby="spec-title"><h2 id="spec-title">Spec</h2>{{SPEC}}</section>
+<section aria-labelledby="correctness-title"><h2 id="correctness-title">Correctness</h2>{{CORRECTNESS}}{{CORRECTNESS_SKIPPED}}</section>
+<section aria-labelledby="conventions-title"><h2 id="conventions-title">Conventions</h2>{{CONVENTIONS}}{{CONVENTIONS_SKIPPED}}</section>
+<section aria-labelledby="unverified-title"><h2 id="unverified-title">Could not verify</h2>{{UNVERIFIED}}</section>
+</main>
+</body>
+</html>
+<!-- EXAMPLES: remove this entire comment when filling the template.
+Finding section token (SECURITY, SPEC, CORRECTNESS or CONVENTIONS). For SPEC the pill names the
+kind (MISSING, PARTIAL, WRONG, SETTLED SILENTLY, NOT ASKED FOR) and a "Spec" entry quoting the
+spec line replaces "Evidence":
+<ul class="findings">
+<li class="finding" id="V1">
+<div class="finding-head"><span class="finding-id">V1</span><span class="pill medium">MEDIUM</span></div>
+<h3>One-sentence finding title.</h3>
+<dl><dt>Where</dt><dd><code>path/to/file.php:42</code></dd>
+<dt>Evidence</dt><dd>Concrete input or state and wrong outcome; include confidence for security.</dd>
+<dt>Proposed fix</dt><dd>Describe the fix without applying it. For judgment calls explain why no fix is recommended.</dd>
+<dt>Rule</dt><dd>Conventions only: rule file and section or quotation.</dd>
+<dt>Spec</dt><dd>Spec only: the quoted spec line, in place of Evidence.</dd></dl>
+</li>
+</ul>
+Empty section token:
+<p class="clean">Clean. Checked: dimensions checked (or Checked against: rule set for conventions).</p>
+Unrun section token:
+<p class="clean">Not run: explain why. This group has not been checked.</p>
+Skipped token (use empty string when none):
+<details class="skipped"><summary>Skipped (1)</summary><ul><li><code>path/to/file.php:42</code> — Flagged concern — false positive or judgment explanation.</li></ul></details>
+Could-not-verify token:
+<ul><li>What remains uncertain, and what evidence is needed.</li></ul>
+Or, when nothing is unverified: <p>None.</p>
+-->

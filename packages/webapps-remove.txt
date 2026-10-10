@@ -1,0 +1,8 @@
+# Preinstalled Omarchy web apps to remove, by launcher name.
+# One name per line; '#' starts a comment.
+#
+# Other preinstalled ones: Discord, Google Contacts, Google Maps, Google Messages,
+#                          Google Photos, WhatsApp, X, YouTube, Zoom
+
+HEY
+Basecamp

@@ -1,0 +1,57 @@
+# Omarchy's starship prompt (config/starship.toml in Omarchy 4.0.4) plus:
+#   - PHP version from .php-version (written by `lerd isolate`)
+#   - duration of commands that took longer than 2 seconds
+#   - exit code of a failed command
+#   - ahead/behind counts in the git status (Omarchy defines them but never shows them)
+# Used through STARSHIP_CONFIG (see ~/.config/bash/exports.sh), so Omarchy's own
+# ~/.config/starship.toml is left alone.
+
+add_newline = true
+command_timeout = 200
+format = "$directory$git_branch$git_status${custom.php}$cmd_duration$status$character"
+
+[character]
+error_symbol = "[✗](bold cyan)"
+success_symbol = "[❯](bold cyan)"
+
+[directory]
+truncation_length = 2
+truncation_symbol = "…/"
+repo_root_style = "bold cyan"
+repo_root_format = "[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
+
+[git_branch]
+format = "[$branch]($style) "
+style = "italic cyan"
+
+[git_status]
+format     = '[$all_status$ahead_behind]($style)'
+style      = "cyan"
+ahead      = "⇡${count} "
+diverged   = "⇕⇡${ahead_count}⇣${behind_count} "
+behind     = "⇣${count} "
+conflicted = " "
+up_to_date = " "
+untracked  = "? "
+modified   = " "
+stashed    = ""
+staged     = ""
+renamed    = ""
+deleted    = ""
+
+# Reading the file is instant; asking Lerd's php shim would be too slow for a prompt.
+[custom.php]
+detect_files = [".php-version"]
+command = "cat .php-version"
+format = "[php $output]($style) "
+style = "dimmed cyan"
+
+[cmd_duration]
+min_time = 2000
+format = "[took $duration]($style) "
+style = "dimmed cyan"
+
+[status]
+disabled = false
+format = "[$status]($style) "
+style = "bold red"

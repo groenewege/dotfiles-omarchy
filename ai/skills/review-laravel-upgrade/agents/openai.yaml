@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Laravel Upgrade"
+  short_description: "Audit Laravel upgrade completeness and regressions"
+  default_prompt: "Use $review-laravel-upgrade to audit this Laravel upgrade for missed changes and regressions."

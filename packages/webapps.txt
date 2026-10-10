@@ -1,0 +1,8 @@
+# Web apps installed with omarchy-webapp-install.
+# Format: Name | URL | icon (PNG URL, local path, or icon name; leave empty to fetch the favicon)
+#   [| custom exec | mime types]
+# Existing launchers are skipped; to change one, remove it (omarchy-webapp-remove "Name")
+# and re-run `./install.sh --only desktop`. $HOME in the exec column is expanded.
+
+Gmail  | https://mail.google.com/              | https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/gmail.png  | $HOME/.local/bin/gmail-webapp-handler %u | x-scheme-handler/mailto
+Notion | https://www.notion.so/groenewege/      | https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/notion.png

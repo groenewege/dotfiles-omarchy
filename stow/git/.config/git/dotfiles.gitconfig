@@ -1,0 +1,36 @@
+# Included at the end of Omarchy's ~/.config/git/config (see scripts/30-link.sh),
+# so these settings win over Omarchy's defaults.
+
+[user]
+	name = Gunther Groenewege
+	email = gunther@groenewege.com
+	signingkey = ~/.ssh/id_ed25519.pub
+
+[init]
+	defaultBranch = main
+
+# Sign commits and tags with the SSH key (uploaded as a signing key by scripts/70-ssh-github.sh)
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	allowedSignersFile = ~/.ssh/allowed_signers
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
+
+# delta as pager
+[core]
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	line-numbers = true
+[merge]
+	conflictStyle = zdiff3
+
+[alias]
+	lg = log --oneline --decorate --graph
+	unstage = reset HEAD --
+	amend = commit --amend --no-edit

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code review: {{TARGET_SHORT}}</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --panel: #ffffff; --ink: #1f2328; --muted: #6a737d; --line: #e2e4e8;
+    --sec: #c62828; --sec-bg: #fdecea; --cor: #e65100; --cor-bg: #fff3e0;
+    --con: #1565c0; --con-bg: #e8f0fb; --ok: #2e7d32; --ok-bg: #e8f5e9; --skip: #9e9e9e;
+    --spc: #6a1b9a; --spc-bg: #f3e5f5;
+    --code-bg: #eef0f3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a; --panel: #1c1f24; --ink: #e6e8eb; --muted: #9aa3ad; --line: #2c3037;
+      --sec: #ff6b6b; --sec-bg: #3a1e1e; --cor: #ffab55; --cor-bg: #3a2a18;
+      --con: #7cb2ff; --con-bg: #1a2739; --ok: #7bd88f; --ok-bg: #1b2e20; --skip: #7a8290;
+      --spc: #d29bf0; --spc-bg: #2e1f38;
+      --code-bg: #262a31;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 19px; margin: 40px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  h2 .count { font-size: 13px; font-weight: normal; color: var(--muted); margin-left: 8px; }
+  .subtitle { color: var(--muted); margin: 0 0 20px; }
+  .verdict { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--ok);
+             border-radius: 6px; padding: 14px 18px; font-size: 16px; }
+  .verdict.has-security { border-left-color: var(--sec); }
+  .verdict.has-spec { border-left-color: var(--spc); }
+  .verdict.has-correctness { border-left-color: var(--cor); }
+  table.scope { border-collapse: collapse; width: 100%; margin-top: 16px; background: var(--panel);
+                border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  table.scope th, table.scope td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line);
+                                   vertical-align: top; }
+  table.scope th { width: 160px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  table.scope tr:last-child td, table.scope tr:last-child th { border-bottom: 0; }
+  .lanes { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+  .tile { flex: 1 1 140px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+          padding: 12px 14px; }
+  .tile .n { font-size: 28px; font-weight: 700; line-height: 1; }
+  .tile .l { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .tile.sec .n { color: var(--sec); } .tile.spc .n { color: var(--spc); }
+  .tile.cor .n { color: var(--cor); } .tile.con .n { color: var(--con); }
+  .finding { background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+             padding: 14px 16px 14px 18px; margin: 12px 0; position: relative; }
+  .finding::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+                     border-radius: 6px 0 0 6px; }
+  .finding.sec::before { background: var(--sec); }
+  .finding.spc::before { background: var(--spc); }
+  .finding.cor::before { background: var(--cor); }
+  .finding.con::before { background: var(--con); }
+  .finding .head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .finding .id { font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .finding .sev { font-size: 12px; padding: 1px 8px; border-radius: 10px; font-weight: 600; }
+  .sec .sev { background: var(--sec-bg); color: var(--sec); }
+  .spc .sev { background: var(--spc-bg); color: var(--spc); }
+  .cor .sev { background: var(--cor-bg); color: var(--cor); }
+  .con .sev { background: var(--con-bg); color: var(--con); }
+  .finding .title { font-weight: 600; }
+  .finding dl { margin: 10px 0 0; display: grid; grid-template-columns: 90px 1fr; gap: 4px 12px; }
+  .finding dt { color: var(--muted); font-size: 13px; }
+  .finding dd { margin: 0; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px;
+         background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  pre { background: var(--code-bg); padding: 10px 12px; border-radius: 6px; overflow-x: auto; font-size: 13px; }
+  pre code { background: none; padding: 0; }
+  .clean { color: var(--ok); background: var(--ok-bg); border-radius: 6px; padding: 10px 14px; }
+  .not-run { color: var(--muted); background: var(--panel); border: 1px dashed var(--line);
+             border-radius: 6px; padding: 10px 14px; }
+  .skipped { margin-top: 14px; color: var(--muted); font-size: 14px; }
+  .skipped summary { cursor: pointer; color: var(--skip); }
+  .skipped li { margin: 4px 0; }
+  ul.plain { padding-left: 20px; }
+  @media (max-width: 600px) { .finding dl { grid-template-columns: 1fr; } table.scope th { width: auto; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Code review</h1>
+  <p class="subtitle">{{TARGET}} · {{DATE}}</p>
+
+  <div class="verdict {{VERDICT_CLASS}}">{{VERDICT}}</div>
+
+  <div class="lanes">
+    <div class="tile sec"><div class="n">{{N_SECURITY}}</div><div class="l">Security</div></div>
+    <div class="tile spc"><div class="n">{{N_SPEC}}</div><div class="l">Spec</div></div>
+    <div class="tile cor"><div class="n">{{N_CORRECTNESS}}</div><div class="l">Correctness</div></div>
+    <div class="tile con"><div class="n">{{N_CONVENTIONS}}</div><div class="l">Conventions</div></div>
+  </div>
+
+  <table class="scope">
+    <tr><th>Repository</th><td>{{REPO}}</td></tr>
+    <tr><th>Mode</th><td>{{MODE}}</td></tr>
+    <tr><th>Target</th><td>{{TARGET}}</td></tr>
+    <tr><th>Files in scope</th><td>{{FILES}}</td></tr>
+    <tr><th>Lanes run</th><td>{{LANES}}</td></tr>
+    <tr><th>Spec</th><td>{{SPEC_SOURCE}}</td></tr>
+    <tr><th>Skills consulted</th><td>{{SKILLS}}</td></tr>
+  </table>
+
+  <h2>Security <span class="count">{{N_SECURITY}} finding(s)</span></h2>
+  {{SECURITY}}
+
+  <h2>Spec <span class="count">{{N_SPEC}} finding(s)</span></h2>
+  {{SPEC}}
+
+  <h2>Correctness <span class="count">{{N_CORRECTNESS}} finding(s)</span></h2>
+  {{CORRECTNESS}}
+
+  <h2>Conventions <span class="count">{{N_CONVENTIONS}} finding(s)</span></h2>
+  {{CONVENTIONS}}
+
+  <h2>Could not verify</h2>
+  {{UNVERIFIED}}
+</main>
+</body>
+</html>
+
+<!--
+Snippets for filling the placeholders (copy, do not leave this comment in the output).
+
+A finding (class is sec / spc / cor / con; severity text is free, e.g. High, Medium, Low;
+for a spec finding the severity names the kind: Missing, Partial, Wrong, Settled silently,
+Not asked for):
+
+  <div class="finding sec">
+    <div class="head"><span class="id">S1</span><span class="sev">High</span>
+      <span class="title">One-sentence defect</span></div>
+    <dl>
+      <dt>Where</dt><dd><code>app/Http/Controllers/Foo.php:42</code></dd>
+      <dt>Evidence</dt><dd>Who does what, and what goes wrong.</dd>
+      <dt>Proposed fix</dt><dd>Concrete change, described. Not applied.</dd>
+      <dt>Rule</dt><dd>(conventions only) the rule it breaks, cited.</dd>
+      <dt>Spec</dt><dd>(spec only) the quoted spec line, in place of Evidence.</dd>
+    </dl>
+  </div>
+
+A clean group:
+
+  <p class="clean">Clean. Checked: authorization, mass assignment, raw queries, Blade escaping.</p>
+
+The Spec group when no spec was given or it could not be loaded ({{N_SPEC}} is then –,
+{{SPEC_SOURCE}} is "none"):
+
+  <p class="not-run">Not run: no spec given.</p>
+
+{{SPEC_SOURCE}} otherwise: the spec file path or the Notion URL.
+
+Skipped items under a group (judgment calls and false positives):
+
+  <details class="skipped"><summary>2 skipped</summary>
+    <ul>
+      <li><code>path:line</code> — what was flagged — skipped: judgment call, because …</li>
+      <li><code>path:line</code> — what was flagged — skipped: false positive, because …</li>
+    </ul>
+  </details>
+
+Could-not-verify list:
+
+  <ul class="plain"><li>What could not be confirmed and what would be needed.</li></ul>
+-->

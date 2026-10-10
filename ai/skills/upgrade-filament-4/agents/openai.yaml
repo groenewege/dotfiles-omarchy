@@ -1,0 +1,4 @@
+interface:
+  display_name: "Upgrade Filament 4"
+  short_description: "Upgrade Filament v3 code to v4 or v5"
+  default_prompt: "Use $upgrade-filament-4 to upgrade this Filament v3 codebase to Filament v4 or v5."

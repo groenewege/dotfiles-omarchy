@@ -1,0 +1,12 @@
+#!/bin/bash
+# Open Gmail as a web app; translates mailto: links into a Gmail compose window.
+# Registered as the mailto: handler by scripts/30-desktop.sh.
+
+url="$1"
+web_url="https://mail.google.com/"
+
+if [[ $url =~ ^mailto: ]]; then
+  web_url="https://mail.google.com/mail/?extsrc=mailto&url=$(jq -rn --arg u "$url" '$u|@uri')"
+fi
+
+exec omarchy-launch-webapp "$web_url"

@@ -1,0 +1,20 @@
+// Zed keymap, ported from my Mac (cmd becomes ctrl on Linux).
+[
+  {
+    "unbind": {
+      "ctrl-shift-c": "collab_panel::ToggleFocus"
+    }
+  },
+  {
+    "bindings": {
+      "ctrl-shift-c": "workspace::CopyRelativePath"
+    }
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      "ctrl-shift-r": "editor::SpawnNearestTask",
+      "ctrl-shift-f": ["task::Spawn", { "task_name": "Laravel: Test current file" }]
+    }
+  }
+]

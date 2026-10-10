@@ -1,0 +1,4 @@
+interface:
+  display_name: "Upgrade Livewire 4"
+  short_description: "Upgrade Livewire v3 code to v4"
+  default_prompt: "Use $upgrade-livewire-4 to upgrade this Livewire v3 codebase to Livewire v4."

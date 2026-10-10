@@ -1,0 +1,21 @@
+# Appended to Omarchy's ~/.config/herdr/config.toml by scripts/30-link.sh.
+# Don't redefine tables Omarchy's file already has (e.g. [ui], [keys]); TOML
+# rejects a table defined twice. Add keys to those with [[keys.command]] or
+# dotted subtables like [ui.toast] instead.
+
+# herdr-plus plugin (installed by scripts/60-ai.sh)
+[[keys.command]]
+key = "prefix+up"
+type = "plugin_action"
+command = "cloudmanic.herdr-plus.projects"
+description = "herdr-plus: projects"
+
+[[keys.command]]
+key = "prefix+down"
+type = "plugin_action"
+command = "cloudmanic.herdr-plus.quick-actions"
+description = "herdr-plus: quick actions"
+
+# Show background notifications as in-app toasts
+[ui.toast]
+delivery = "herdr"

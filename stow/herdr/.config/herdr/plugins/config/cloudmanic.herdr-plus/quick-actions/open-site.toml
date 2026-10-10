@@ -1,0 +1,5 @@
+# Open the Lerd site of the current project (https://<folder>.test) in the browser.
+name = "Open site"
+description = "Open https://<project>.test"
+type = "command"
+command = "{{opener}} \"https://$(basename '{{.WorkDir}}').test\""

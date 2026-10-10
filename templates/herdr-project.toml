@@ -1,0 +1,14 @@
+# herdr-plus project template. Copy it per project:
+#   cp templates/herdr-project.toml \
+#     ~/.config/herdr/plugins/config/cloudmanic.herdr-plus/projects/my-app.toml
+# Then prefix+up in herdr opens the project picker.
+name = "my-app"
+description = "laravel project"
+working_dir = "~/Sites/my-app"
+
+[[tabs]]
+name = "claude"
+command = "claude"
+
+[[tabs]]
+name = "terminal"

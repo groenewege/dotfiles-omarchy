@@ -1,0 +1,4 @@
+interface:
+  display_name: "Upgrade Laravel 12"
+  short_description: "Upgrade Laravel v11 code to v12 or newer"
+  default_prompt: "Use $upgrade-laravel-12 to upgrade this Laravel v11 codebase to Laravel v12 or newer."
