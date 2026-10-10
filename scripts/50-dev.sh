@@ -35,7 +35,9 @@ mkdir -p "$SITES_DIR"
 lerd park "$SITES_DIR"
 ok "projects in $(pretty "$SITES_DIR") are served at https://<folder>.test"
 
-installed=$(composer global show --name-only 2>/dev/null || true)
+# With a terminal on stdin, Lerd's composer shim adds colours and \r\n line
+# endings, so read the list without one.
+installed=$(composer global show --name-only --no-ansi 2>/dev/null </dev/null | tr -d '\r' || true)
 for pkg in "${COMPOSER_GLOBALS[@]}"; do
   if grep -qxF "$pkg" <<<"$installed"; then
     ok "composer global package already installed: $pkg"
