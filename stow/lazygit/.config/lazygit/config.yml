@@ -1,0 +1,9 @@
+# lazygit config. Omarchy ships an empty file; this one replaces it.
+# All options: lazygit --config, or /usr/share/doc/lazygit/Config.md
+
+git:
+  # Show diffs through delta, like `git diff` does (see dotfiles.gitconfig).
+  # Clicking a line number opens that line in the editor.
+  # Docs: /usr/share/doc/lazygit/Custom_DiffRenderers.md
+  diffRenderers:
+    - command: delta --dark --paging=never --line-numbers --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
