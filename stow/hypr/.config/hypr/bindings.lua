@@ -17,3 +17,6 @@ o.bind("SUPER + SHIFT + ALT + N", "Notion", { webapp = "https://www.notion.so/gr
 -- herdr is on Super+Ctrl+Return.
 hl.unbind("SUPER + ALT + RETURN")
 o.bind("SUPER + ALT + RETURN", "Ghostty", { launch = "ghostty" })
+
+-- Agent usage panel (Claude/Codex/Fireworks limits), same as clicking the bar icon
+o.bind("SUPER + CTRL + U", "Agent usage", "omarchy-shell shell toggle omarchy.agents")
