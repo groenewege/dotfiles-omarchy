@@ -222,7 +222,9 @@ mv hosts ~/.ssh/config.d/hosts && chmod 600 ~/.ssh/config.d/hosts
 ### herdr-plus projects
 
 Project files (one per Laravel project, opened with prefix+up in herdr) are
-personal, so they aren't in the repo. Start from `templates/herdr-project.toml`.
+personal, so they aren't in the repo. `setup-project` creates one for each
+project it sets up (tabs: claude, lazygit, terminal). For anything else, start
+from `templates/herdr-project.toml`.
 
 ## Laravel with Lerd
 
@@ -240,6 +242,8 @@ setup-project                        # set up the project in the current folder
 `setup-project` (in `stow/bin/.local/bin/`) runs, in order:
 
 1. Clone with `gh repo clone` (or `git clone` for a URL), unless you're already in the project.
+   Then check out `develop` (staging and main/master deploy automatically), when the repo has one.
+   Either way, add a herdr-plus project for it (tabs: claude, lazygit, terminal), unless one exists.
 2. Copy `.env.example` to `.env` when there's no `.env` yet.
 3. `lerd isolate 8.3`, unless the project already picks a version
    (`.php-version`, or `php_version` in `.lerd.yaml`). Without it Lerd takes the
