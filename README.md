@@ -120,7 +120,7 @@ ai/skills/                 skills for both Claude Code and Codex
 ai/skills-claude/          Claude-only variants
 ai/skills-codex/           Codex-only variants
 templates/                 files copied once instead of linked, and examples
-docs/                      first-install guide and the audit prompt for agents
+docs/                      first-install guide, cheat sheet, and the audit prompt for agents
 ```
 
 Every step checks before acting, so `./install.sh` can be run again at any
@@ -188,26 +188,11 @@ dotfiles             # cd into this repo
 | A Claude plugin | add it to `packages/claude-plugins.txt` | `./install.sh --only ai` |
 | A whole new step | add `scripts/NN-name.sh` (source `lib/common.sh`, keep it idempotent) | `./install.sh --only name` |
 
-### Shell cheat sheet
+### Cheat sheet
 
-Omarchy's defaults stay available: `ls`/`lt` (eza), `cd` (zoxide), `ff` (fzf
-with preview), `g` (git), `h` (herdr), `cx` (claude), `cy` (codex), `n` (nvim),
-`open`, and fzf's Ctrl+R (history), Ctrl+T (files) and Alt+C (cd).
-
-Added by this repo (see `stow/bash/.config/bash/`):
-
-| | |
-|---|---|
-| Laravel | `art`, `tinker`, `pam` `pam:fs` `pam:f` `pam:r` `pam:rs` `pam:roll`, `routes [filter]`, `scheduler` |
-| Tests | `p` (pest or phpunit), `pf <filter>`, `pp` (parallel), `t`/`tf` (phpunit) |
-| Composer / npm | `ci` `cu` `cr` `cda`, `nr` `nrd` `nrb` |
-| Git | `commit [msg]` (no message: Claude writes one), `gll`, `nah`, `uncommit`, `push`, `pull`, `gpo`, `git-prune-local`, `clone owner/repo`, `lg` |
-| Databases | `db create|drop|refresh|list <name>` (Lerd MySQL) |
-| AI | `c` (claude), `cxy` (codex without approvals) |
-| Projects | `setup-project [owner/repo]` (clone + full Lerd setup) |
-| Misc | `mkd`, `zed`, `o`, `sites`, `copykey`, `myip`, `localip`, `flushdns`, `digga`, `removehost`, Ctrl+G (fuzzy cd) |
-
-Overridden Omarchy aliases: `c` (was opencode) and `t` (was tmux).
+Aliases, functions and keyboard shortcuts (Omarchy, terminals, herdr, Zed,
+Claude Code, and the ones this repo adds) are in
+[docs/cheatsheet.md](docs/cheatsheet.md).
 
 ## Secrets
 

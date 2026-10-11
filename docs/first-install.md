@@ -2,7 +2,7 @@
 
 This repo was written on a Mac, without access to a real Omarchy installation.
 So the first time, let an agent check it against the actual machine **before**
-running anything. Later machines can skip step 4 and follow the
+running anything. Later machines can skip step 3 and follow the
 [README](../README.md#fresh-install) directly.
 
 ## 1. Install and update Omarchy
@@ -28,14 +28,7 @@ git clone https://github.com/groenewege/dotfiles-omarchy.git ~/Code/dotfiles-oma
 cd ~/Code/dotfiles-omarchy
 ```
 
-## 3. Copy your server list (optional now)
-
-Copy your SSH hosts into `~/.ssh/config.d/hosts`. See
-[README > SSH hosts](../README.md#ssh-hosts) for how to make that file. This
-can wait until after the install, but you'll need it before connecting to any
-server.
-
-## 4. Let an agent audit the repo
+## 3. Let an agent audit the repo
 
 Start Claude Code in **plan mode**: it can read and inspect everything, but it
 can't change anything until you approve its plan. The prompt is in
@@ -60,7 +53,7 @@ If the commit fails because git doesn't know who you are yet, let the agent run
 `git config --global user.name "Gunther Groenewege"` and
 `git config --global user.email gunther@groenewege.com` first.
 
-## 5. Install
+## 4. Install
 
 Run the steps in the order the report recommends, checking after each one:
 
@@ -77,7 +70,7 @@ Or run everything at once with `./install.sh`. The prompts to expect, and the
 by-hand checklist afterwards, are in the
 [README](../README.md#3-run-the-installer).
 
-## 6. Push the fixes
+## 5. Push the fixes
 
 The `ssh-github` step creates your SSH key, adds it to GitHub, and switches
 this repo's remote from HTTPS to SSH. After that you can push the agent's
