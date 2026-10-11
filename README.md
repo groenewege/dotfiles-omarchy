@@ -19,7 +19,7 @@ settings on top, so `omarchy-update` keeps working and the repo stays small.
 | Editor | Zed, installed through Omarchy (omazed keeps its theme in sync) |
 | PHP / MySQL | [Lerd](https://lerd.sh): PHP 8.3, MySQL, `http://<project>.test` for every folder in `~/Sites` (HTTPS with `lerd secure`) |
 | AI | Claude Code, Codex (Omarchy's auto-updating stubs), my skills and plugins, herdr + herdr-plus, worktrunk |
-| Apps | 1Password, Gmail and Notion web apps; HEY and Basecamp removed |
+| Apps | 1Password, Gmail, Notion, Pinboard and Mailpit (Lerd's mail catcher) web apps; HEY and Basecamp removed |
 | Git / SSH | ed25519 key, GitHub over SSH, signed commits; server list in a private file |
 
 ## Fresh install
