@@ -116,9 +116,7 @@ in the command palette.
 |---|---|
 | Super+C / V / X | Universal copy / paste / cut (works in terminals too) |
 | Super+Ctrl+V | Clipboard history |
-| Print | Screenshot (Alt+Print: screen recording) |
-| Super+Ctrl+Print | Copy the text in a screenshot (OCR) |
-| Super+Print | Color picker |
+| Super+Ctrl+C | Capture menu (screenshot, screen recording, text/OCR, QR code, color picker) |
 | Super+Ctrl+L | Lock |
 | Super+Ctrl+W / B / A | Network / Bluetooth / Audio |
 | Super+Ctrl+N | Toggle night light |
@@ -170,6 +168,7 @@ Zed's Linux keys are its macOS keys with Ctrl instead of Cmd.
 | Ctrl+Shift+P | Command palette |
 | Ctrl+R | Recent projects |
 | Ctrl+Shift+E | Project panel (Ctrl+B: hide/show the left dock) |
+| Ctrl+Alt+B / Ctrl+J | Hide/show the right / bottom dock |
 | Ctrl+Shift+G | Git panel |
 | Ctrl+` | Terminal panel |
 | Ctrl+? | Agent panel |

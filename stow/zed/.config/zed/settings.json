@@ -74,7 +74,7 @@
   "project_panel": {
     "default_width": 240.0,
     "file_icons": true,
-    "dock": "right",
+    "dock": "left",
     "button": true
   },
   "buffer_line_height": "comfortable",
