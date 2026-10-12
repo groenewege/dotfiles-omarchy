@@ -1,0 +1,8 @@
+# Installed by dotfiles (scripts/05-hardware.sh) on MacBookPro16,1.
+
+# Keep the AMD 5300M at its lowest power level (t2linux hybrid-graphics guide).
+SUBSYSTEM=="drm", KERNEL=="card[0-9]*", DRIVERS=="amdgpu", ATTR{device/power_dpm_force_performance_level}="low"
+
+# A stable name for the Intel GPU, for AQ_DRM_DEVICES: card numbers change
+# between boots.
+SUBSYSTEM=="drm", KERNEL=="card[0-9]*", KERNELS=="0000:00:02.0", SYMLINK+="dri/intel-igpu"

@@ -39,10 +39,11 @@ ensure_line() {
 
 # Write a named block between markers at the end of a file, replacing an
 # earlier version of the same block. Used for files Omarchy owns, so we only
-# touch our own lines.
+# touch our own lines. The optional 4th argument is the comment prefix for the
+# markers (default '#'; '--' for Lua).
 ensure_block() {
-  local file=$1 name=$2 content=$3
-  local begin="# >>> dotfiles: $name >>>" end="# <<< dotfiles: $name <<<"
+  local file=$1 name=$2 content=$3 comment=${4:-#}
+  local begin="$comment >>> dotfiles: $name >>>" end="$comment <<< dotfiles: $name <<<"
   local tmp
   mkdir -p "$(dirname "$file")"
   touch "$file"

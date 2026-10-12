@@ -39,6 +39,10 @@ On an Intel MacBook (this wipes macOS):
 3. Follow the installer. Omarchy installs the Broadcom Wi-Fi driver and the
    T2 / SPI keyboard fixes for Macs automatically. F1–F12 work as function keys
    (`fnmode=2`); hold Fn for media keys.
+4. On the 16" MacBook Pro (2019), Shut Down and sleep make the Mac restart by
+   itself until the `hardware` step has run and you have rebooted. If the
+   desktop crashes right after login, add `apple_gmux.force_igd=1` once at the
+   Limine menu (`e` to edit, F10 to boot).
 
 See the [Omarchy manual](https://omarchy.org/manual/) for details.
 
@@ -105,6 +109,7 @@ packages/                  plain lists, read by the scripts
   claude-marketplaces.txt  Claude Code plugin marketplaces
   claude-plugins.txt       Claude Code plugins
 scripts/
+  05-hardware.sh           model-specific fixes (16" MacBook Pro 2019: screen on the Intel GPU)
   10-packages.sh           install pacman.txt and aur.txt
   20-cleanup.sh            remove webapps-remove.txt and remove.txt
   30-desktop.sh            Zed, 1Password, web apps, Gmail as mailto handler, login screen keyboard, theme
@@ -115,6 +120,7 @@ scripts/
 stow/<package>/            files laid out as in $HOME, symlinked with GNU stow
 config/herdr.toml          block appended to Omarchy's herdr config
 config/sddm/               login screen (SDDM) keyboard layout, copied to /etc
+config/macbook-pro-16/     boot option, udev rules and Hyprland GPU settings for MacBookPro16,1
 ai/AGENTS.md               shared instructions → ~/.claude/CLAUDE.md and ~/.codex/AGENTS.md
 ai/skills/                 skills for both Claude Code and Codex
 ai/skills-claude/          Claude-only variants
@@ -140,6 +146,8 @@ signing with `~/.ssh/id_ed25519`, which `ssh-github` creates.
    - `~/.config/herdr/config.toml` gets a marked block from `config/herdr.toml`.
    - Hyprland loads our `~/.config/hypr/bindings.lua` and `input.lua` itself
      (Omarchy only puts commented examples in them).
+   - On the 16" MacBook Pro, `~/.config/hypr/monitors.lua` gets a marked block
+     from `config/macbook-pro-16/monitors.lua` (the `hardware` step).
    - The login screen: SDDM runs its own Hyprland with Omarchy's
      `/usr/share/sddm/hyprland.lua`, which sets no keyboard layout. The
      `desktop` step copies `config/sddm/hyprland.lua` (Omarchy's file plus our
