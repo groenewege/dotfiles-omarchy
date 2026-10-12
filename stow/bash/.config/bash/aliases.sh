@@ -32,6 +32,7 @@ alias nrb="npm run build"
 
 # AI agents
 alias c="claude"                           # overrides Omarchy's opencode alias
+alias ccc="claude --continue"              # cc is the C compiler
 alias cxy="codex --dangerously-bypass-approvals-and-sandbox"
 
 # Git

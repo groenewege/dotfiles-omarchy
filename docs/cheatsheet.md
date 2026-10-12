@@ -218,7 +218,7 @@ Added by this repo (see `stow/bash/.config/bash/`):
 | Composer / npm | `ci` `cu` `cr` `cda`, `nr` `nrd` `nrb` |
 | Git | `commit [msg]` (no message: Claude writes one), `gll`, `nah`, `uncommit`, `push`, `pull`, `gpo`, `git-prune-local`, `clone owner/repo`, `lg` |
 | Databases | `db create\|drop\|refresh\|list <name>` (Lerd MySQL) |
-| AI | `c` (claude), `cxy` (codex without approvals) |
+| AI | `c` (claude), `ccc` (claude --continue), `cxy` (codex without approvals) |
 | Projects | `setup-project [owner/repo]` (clone + full Lerd setup), `sites`, `dotfiles` |
 | Lerd | `tunnel` (`lerd share`), `phpserve` (plain `php -S` on port 8888) |
 | Files | `l` / `ll` (eza), `cat` (bat), `top` (btm), `mkd`, `zed`, `o` (open the folder), Ctrl+G (fuzzy cd) |
