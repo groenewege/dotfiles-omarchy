@@ -115,7 +115,7 @@ scripts/
   30-desktop.sh            Zed, 1Password, web apps, Gmail as mailto handler, login screen keyboard, theme
   40-link.sh               stow everything in stow/, hook into Omarchy-owned files
   50-dev.sh                Lerd, PHP 8.3, MySQL, park ~/Sites, global Composer tools
-  60-ai.sh                 skills, Claude plugins, Codex config, herdr plugin + integrations
+  60-ai.sh                 skills, Claude plugins, Codex config, Lerd MCP, herdr plugin + integrations
   70-ssh-github.sh         SSH key + agent, gh login, upload auth and signing key
 stow/<package>/            files laid out as in $HOME, symlinked with GNU stow
 config/herdr.toml          block appended to Omarchy's herdr config
@@ -282,6 +282,24 @@ lerd doctor          # diagnose
 ```
 
 Lerd also serves git worktrees automatically at `<branch>.<site>.test`.
+
+### Lerd in Claude Code and Codex (MCP)
+
+`60-ai.sh` registers Lerd's MCP server (`lerd mcp`) in Claude Code (user
+scope) and Codex (`~/.codex/config.toml`), and installs Lerd's `lerd` skill for
+both. The agents can then manage the site in the folder they're opened in:
+services, databases and snapshots, `.env`, PHP and Node versions, workers,
+logs, artisan and composer, worktrees, and diagnostics (slow queries, N+1,
+Xdebug). It complements Laravel Boost, which works inside the app.
+
+We don't use `lerd mcp:enable-global`: it also configures Cursor, Gemini,
+Junie, Windsurf, VS Code and OpenCode, and writes its instructions into
+`~/.codex/AGENTS.md`, which is this repo's file. The skill comes with the lerd
+binary, so `update.sh` regenerates it after `lerd update`.
+
+Some actions are destructive (restore a snapshot, drop a database, unlink a
+site), so leave Lerd's tools out of the permission allow lists: the agent asks
+first.
 
 ### A new project
 

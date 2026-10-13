@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # AI tooling: skills for Claude Code and Codex, Claude plugins, Codex config,
-# herdr plugins and agent integrations.
+# Lerd's MCP server, herdr plugins and agent integrations.
 #
 # claude, codex and gh are Omarchy's mise stubs: the first call installs the
 # real tool, and `omarchy-update` keeps it up to date.
@@ -62,6 +62,26 @@ else
   mkdir -p "$HOME/.codex"
   cp "$DOTFILES/templates/codex-config.toml" "$HOME/.codex/config.toml"
   ok "Codex config created from template"
+fi
+
+# Lerd's MCP server (sites, services, databases, logs, workers) and its skill,
+# for Claude Code and Codex only (see install_lerd_skill in lib/common.sh).
+if have lerd; then
+  if claude mcp get lerd >/dev/null 2>&1; then
+    ok "Lerd MCP server already registered in Claude Code"
+  else
+    claude mcp add --scope user lerd -- lerd mcp
+  fi
+  # The template has it; Codex configs copied before that don't.
+  if grep -qxF '[mcp_servers.lerd]' "$HOME/.codex/config.toml"; then
+    ok "Lerd MCP server already in Codex config"
+  else
+    printf '\n[mcp_servers.lerd]\ncommand = "lerd"\nargs = ["mcp"]\n' >>"$HOME/.codex/config.toml"
+    ok "Lerd MCP server added to Codex config"
+  fi
+  install_lerd_skill
+else
+  warn "lerd not found; run ./install.sh --only dev, then --only ai"
 fi
 
 # herdr: the herdr-plus plugin and the Claude/Codex agent-state hooks.

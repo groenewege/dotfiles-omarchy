@@ -19,6 +19,8 @@ fi
 if have lerd; then
   log "Updating Lerd"
   lerd update || warn "lerd update failed; run it manually"
+  # install.sh wrote the skill of the Lerd version from before the update.
+  install_lerd_skill
 fi
 
 if have composer; then

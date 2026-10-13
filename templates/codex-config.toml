@@ -13,3 +13,8 @@ hooks = true
 [mcp_servers.laravel-boost]
 command = "php"
 args = ["artisan", "boost:mcp"]
+
+# Lerd MCP server (sites, services, databases, logs; uses the current folder)
+[mcp_servers.lerd]
+command = "lerd"
+args = ["mcp"]

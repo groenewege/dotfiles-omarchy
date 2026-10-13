@@ -106,3 +106,22 @@ relink_if_replaced() {
     warn "$(pretty "$target") had been replaced by a plain file; its content is now in the repo (check git diff)"
   fi
 }
+
+# Lerd's skill (how to use its MCP server) for Claude Code and Codex. It ships
+# with the lerd binary, so it is generated, not kept in ai/skills/:
+# `lerd mcp:inject` writes it into a scratch folder and we copy it out.
+# (`lerd mcp:enable-global` would also install it, but it sets up every AI
+# client it knows and adds the same text to ~/.codex/AGENTS.md, a repo file.)
+install_lerd_skill() {
+  local tmp agent
+  tmp=$(mktemp -d)
+  if lerd mcp:inject --path "$tmp" >/dev/null; then
+    for agent in claude codex; do
+      install -Dm644 "$tmp/.claude/skills/lerd/SKILL.md" "$HOME/.$agent/skills/lerd/SKILL.md"
+    done
+    ok "Lerd skill installed for Claude Code and Codex"
+  else
+    warn "lerd mcp:inject failed; Lerd skill not updated"
+  fi
+  rm -rf "$tmp"
+}

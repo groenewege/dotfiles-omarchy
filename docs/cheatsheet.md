@@ -202,6 +202,10 @@ Zed's Linux keys are its macOS keys with Ctrl instead of Cmd.
 | Ctrl+G | Edit the prompt in `$EDITOR` |
 | Ctrl+C twice | Quit |
 
+Claude Code and Codex know Lerd through its MCP server: ask them to tail the
+logs, snapshot the database, restart the queue worker or find slow queries.
+`/mcp` lists the servers.
+
 ## Shell
 
 Omarchy's defaults stay available: `ls`/`lt` (eza), `cd` (zoxide), `ff` (fzf
