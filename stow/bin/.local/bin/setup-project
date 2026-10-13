@@ -147,15 +147,21 @@ php artisan migrate:fresh --seed
 # lerd env creates). Tests using RefreshDatabase or DatabaseMigrations migrate it
 # themselves; tests using only DatabaseTransactions expect it migrated and
 # seeded, which artisan does through .env.testing (loaded by --env=testing).
-phpunit_env() {
+# .env.testing is .env with phpunit.xml's values on top, so seeding sees what
+# the tests see (the test database, but also e.g. a separate media disk).
+
+# The <env>/<server> values phpunit.xml sets (comments skipped), as NAME=value.
+phpunit_envs() {
   local file
   for file in phpunit.xml phpunit.xml.dist; do
     [[ -f $file ]] || continue
     perl -0pe 's/<!--.*?-->//gs' "$file" |
-      grep -oE "<(env|server) name=\"$1\"[^>]*value=\"[^\"]*\"" | tail -1 | sed -E 's/.*value="([^"]*)"/\1/' || true
+      grep -oE '<(env|server) name="[A-Za-z0-9_]+"[^>]*value="[^"]*"' |
+      sed -E 's/.*name="([^"]+)".*value="([^"]*)".*/\1=\2/' || true
     return 0
   done
 }
+phpunit_env() { phpunit_envs | grep "^$1=" | tail -1 | cut -d= -f2- || true; }
 if [[ -d tests && $db_connection =~ ^(mysql|mariadb)$ ]]; then
   step "Test database"
   db_database=$(env_value DB_DATABASE)
@@ -170,8 +176,15 @@ if [[ -d tests && $db_connection =~ ^(mysql|mariadb)$ ]]; then
       note "the tests migrate it themselves"
     elif grep -rqE '\bDatabaseTransactions\b' tests; then
       if [[ ! -f .env.testing ]]; then
-        sed -E "s/^DB_DATABASE=.*/DB_DATABASE=$test_db/; s/^APP_ENV=.*/APP_ENV=testing/" .env >.env.testing
-        note "created .env.testing (.env with DB_DATABASE=$test_db)"
+        # Overrides first, then .env: replace the keys .env has, append the rest.
+        { phpunit_envs; echo "APP_ENV=testing"; echo "DB_DATABASE=$test_db"; } |
+          awk 'NR == FNR { k = $0; sub(/=.*/, "", k); v = $0; sub(/^[^=]*=/, "", v)
+                           if (!(k in val)) keys[++n] = k; val[k] = v; next }
+               { k = $0; sub(/=.*/, "", k)
+                 if (k in val) { print k "=" val[k]; done[k] = 1 } else print }
+               END { for (i = 1; i <= n; i++) if (!(keys[i] in done)) print keys[i] "=" val[keys[i]] }' \
+            - .env >.env.testing
+        note "created .env.testing: .env with phpunit.xml's values (DB_DATABASE=$test_db)"
         git check-ignore -q .env.testing 2>/dev/null || problem ".env.testing isn't in .gitignore: don't commit it"
       fi
       if [[ $(grep -E '^DB_DATABASE=' .env.testing | tail -1 | cut -d= -f2- | tr -d "\"'") == "$test_db" ]]; then

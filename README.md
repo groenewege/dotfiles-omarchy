@@ -267,7 +267,8 @@ setup-project                        # set up the project in the current folder
    refuses to run when `DB_URL` is set, or when `DB_HOST` isn't Lerd's MySQL
    (`lerd-*`, `127.0.0.1`, `localhost`) and the project doesn't use SQLite.
 7. Test database: the one `phpunit.xml` names (or Lerd's `<database>_testing`). When the tests only use `DatabaseTransactions` (they don't migrate it themselves),
-   it also writes `.env.testing` (`.env` pointed at the test database) and runs
+   it also writes `.env.testing` (`.env` with the values `phpunit.xml` sets, like the test
+   database or a separate media disk) and runs
    `migrate:fresh --seed --env=testing`.
 8. `php artisan storage:link`.
 9. `npm ci` (or `npm install`), then `npm run build`, or `npm run production` for older Mix projects.
