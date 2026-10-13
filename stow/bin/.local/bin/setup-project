@@ -7,7 +7,8 @@
 #
 # Steps: check out develop (after cloning), herdr-plus project, .env from
 # .env.example, PHP 8.3 pin (unless the project picks a version), Lerd site
-# config (wizard the first time), composer install, lerd env, app key, migrate:fresh --seed, storage:link,
+# config (wizard the first time), composer install, lerd env, app key, migrate:fresh --seed,
+# test database (created; migrated and seeded when the tests expect it), storage:link,
 # npm install + build, boost:install (when laravel/boost is required).
 # A failed npm step doesn't stop the setup: it is listed again at the end.
 set -euo pipefail
@@ -141,6 +142,47 @@ fi
 
 step "Database: migrate:fresh --seed"
 php artisan migrate:fresh --seed
+
+# Test database: the one phpunit.xml names, else Lerd's <database>_testing (which
+# lerd env creates). Tests using RefreshDatabase or DatabaseMigrations migrate it
+# themselves; tests using only DatabaseTransactions expect it migrated and
+# seeded, which artisan does through .env.testing (loaded by --env=testing).
+phpunit_env() {
+  local file
+  for file in phpunit.xml phpunit.xml.dist; do
+    [[ -f $file ]] || continue
+    perl -0pe 's/<!--.*?-->//gs' "$file" |
+      grep -oE "<(env|server) name=\"$1\"[^>]*value=\"[^\"]*\"" | tail -1 | sed -E 's/.*value="([^"]*)"/\1/' || true
+    return 0
+  done
+}
+if [[ -d tests && $db_connection =~ ^(mysql|mariadb)$ ]]; then
+  step "Test database"
+  db_database=$(env_value DB_DATABASE)
+  test_db=$(phpunit_env DB_DATABASE)
+  test_db=${test_db:-${db_database}_testing}
+  if [[ $test_db == "$db_database" ]]; then
+    problem "phpunit.xml uses the app database ($db_database) for tests: give the tests their own"
+  else
+    mysql -e "CREATE DATABASE IF NOT EXISTS \`$test_db\`"
+    note "test database: $test_db"
+    if grep -rqE '\b(RefreshDatabase|LazilyRefreshDatabase|DatabaseMigrations|DatabaseTruncation)\b' tests; then
+      note "the tests migrate it themselves"
+    elif grep -rqE '\bDatabaseTransactions\b' tests; then
+      if [[ ! -f .env.testing ]]; then
+        sed -E "s/^DB_DATABASE=.*/DB_DATABASE=$test_db/; s/^APP_ENV=.*/APP_ENV=testing/" .env >.env.testing
+        note "created .env.testing (.env with DB_DATABASE=$test_db)"
+        git check-ignore -q .env.testing 2>/dev/null || problem ".env.testing isn't in .gitignore: don't commit it"
+      fi
+      if [[ $(grep -E '^DB_DATABASE=' .env.testing | tail -1 | cut -d= -f2- | tr -d "\"'") == "$test_db" ]]; then
+        step "Test database: migrate:fresh --seed (the tests expect it migrated)"
+        php artisan migrate:fresh --seed --env=testing
+      else
+        problem ".env.testing points at another database than $test_db: migrate the test database yourself"
+      fi
+    fi
+  fi
+fi
 
 if [[ -d storage/app/public && ! -e public/storage ]]; then
   step "storage:link"

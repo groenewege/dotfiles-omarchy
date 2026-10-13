@@ -266,12 +266,15 @@ setup-project                        # set up the project in the current folder
 6. `php artisan migrate:fresh --seed` (this empties the database first). It
    refuses to run when `DB_URL` is set, or when `DB_HOST` isn't Lerd's MySQL
    (`lerd-*`, `127.0.0.1`, `localhost`) and the project doesn't use SQLite.
-7. `php artisan storage:link`.
-8. `npm ci` (or `npm install`), then `npm run build`, or `npm run production` for older Mix projects.
+7. Test database: the one `phpunit.xml` names (or Lerd's `<database>_testing`). When the tests only use `DatabaseTransactions` (they don't migrate it themselves),
+   it also writes `.env.testing` (`.env` pointed at the test database) and runs
+   `migrate:fresh --seed --env=testing`.
+8. `php artisan storage:link`.
+9. `npm ci` (or `npm install`), then `npm run build`, or `npm run production` for older Mix projects.
    When `npm ci` fails (often a `package-lock.json` that wasn't updated with `package.json`), it
    runs `npm install`, which rewrites the lockfile. A failed npm step doesn't stop the setup:
    it's listed at the end, and the script exits with an error.
-9. `php artisan boost:install`, when the project requires `laravel/boost`.
+10. `php artisan boost:install`, when the project requires `laravel/boost`.
 
 Lerd's own `lerd setup` does something similar with a checklist, but it runs
 `migrate` instead of `migrate:fresh --seed` and doesn't install Boost.
