@@ -31,6 +31,22 @@ lerd shims add mysql
 lerd shims add mysqldump
 ok "Lerd running with PHP $PHP_VERSION and MySQL"
 
+# By default MySQL flushes every commit to disk, twice (redo log and binary
+# log), and a flush takes ~50 ms on the T2 MacBook's SSD, so seeders crawl. A
+# local database doesn't need that: write the log once a second (a crash loses
+# at most that second) and skip the binary log, which is only for replication.
+# Creating tables stays slow (~0.2-1 s per migration): MySQL always flushes DDL.
+# Lerd never overwrites this tuning file.
+mysql_tuning="$HOME/.local/share/lerd/service-tuning/mysql.conf"
+before=$(cat "$mysql_tuning" 2>/dev/null || true)
+ensure_block "$mysql_tuning" "fast commits" "[mysqld]
+innodb_flush_log_at_trx_commit = 2
+skip-log-bin"
+if [[ $(cat "$mysql_tuning") != "$before" ]]; then
+  lerd service restart mysql
+  ok "MySQL restarted with the new settings"
+fi
+
 mkdir -p "$SITES_DIR"
 lerd park "$SITES_DIR"
 ok "projects in $(pretty "$SITES_DIR") are served at http://<folder>.test (lerd secure for HTTPS)"

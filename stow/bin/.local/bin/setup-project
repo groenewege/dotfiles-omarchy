@@ -9,6 +9,7 @@
 # .env.example, PHP 8.3 pin (unless the project picks a version), Lerd site
 # config (wizard the first time), composer install, lerd env, app key, migrate:fresh --seed, storage:link,
 # npm install + build, boost:install (when laravel/boost is required).
+# A failed npm step doesn't stop the setup: it is listed again at the end.
 set -euo pipefail
 
 SITES_DIR="$HOME/Sites"
@@ -17,6 +18,8 @@ PHP_VERSION="8.3"   # same as scripts/50-dev.sh
 step() { printf '\n\033[1;34m==>\033[0m \033[1m%s\033[0m\n' "$*"; }
 note() { printf '  %s\n' "$*"; }
 die()  { printf '\033[31m%s\033[0m\n' "$*" >&2; exit 1; }
+problems=()
+problem() { printf '\033[33m  ! %s\033[0m\n' "$*" >&2; problems+=("$*"); }
 
 case ${1:-} in
   -h|--help) sed -n '/^set /q; 2,$p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
@@ -144,16 +147,30 @@ if [[ -d storage/app/public && ! -e public/storage ]]; then
   php artisan storage:link
 fi
 
+# npm ci installs exactly what package-lock.json lists, and refuses when
+# package.json was changed without updating the lockfile (Shift's dependency
+# bumps do that). npm install then resolves again and rewrites the lockfile.
 if [[ -f package.json ]]; then
   step "npm install"
-  if [[ -f package-lock.json ]]; then npm ci; else npm install; fi
+  npm_ok=true
+  if [[ -f package-lock.json ]]; then
+    if ! npm ci; then
+      problem "npm ci failed, so npm install ran and updated package-lock.json: check and commit it"
+      step "npm install (updates package-lock.json)"
+      npm install || npm_ok=false
+    fi
+  else
+    npm install || npm_ok=false
+  fi
 
-  if jq -e '.scripts.build' package.json >/dev/null; then
+  if ! $npm_ok; then
+    problem "npm install failed (see the error above): fix the dependencies, then install and build the assets"
+  elif jq -e '.scripts.build' package.json >/dev/null; then
     step "npm run build"
-    npm run build
+    npm run build || problem "npm run build failed (see the error above)"
   elif jq -e '.scripts.production' package.json >/dev/null; then
     step "npm run production"
-    npm run production
+    npm run production || problem "npm run production failed (see the error above)"
   else
     note "no build or production script in package.json, skipping the asset build"
   fi
@@ -168,4 +185,10 @@ else
 fi
 
 url=$(grep -E '^APP_URL=' .env | cut -d= -f2- | tr -d '"' || true)
-step "Done: ${url:-https://$(basename "$PWD").test}"
+if ((${#problems[@]})); then
+  step "Done, with problems to fix:"
+  for p in "${problems[@]}"; do note "- $p"; done
+  note "Site: ${url:-http://$(basename "$PWD").test} (lerd open)"
+  exit 1
+fi
+step "Done: ${url:-http://$(basename "$PWD").test} (lerd open)"

@@ -268,6 +268,9 @@ setup-project                        # set up the project in the current folder
    (`lerd-*`, `127.0.0.1`, `localhost`) and the project doesn't use SQLite.
 7. `php artisan storage:link`.
 8. `npm ci` (or `npm install`), then `npm run build`, or `npm run production` for older Mix projects.
+   When `npm ci` fails (often a `package-lock.json` that wasn't updated with `package.json`), it
+   runs `npm install`, which rewrites the lockfile. A failed npm step doesn't stop the setup:
+   it's listed at the end, and the script exits with an error.
 9. `php artisan boost:install`, when the project requires `laravel/boost`.
 
 Lerd's own `lerd setup` does something similar with a checklist, but it runs
@@ -282,6 +285,13 @@ lerd doctor          # diagnose
 ```
 
 Lerd also serves git worktrees automatically at `<branch>.<site>.test`.
+
+`lerd open` (or "Open site" in herdr-plus) opens the current project in the browser.
+
+`50-dev.sh` tunes Lerd's MySQL for speed over durability (in
+`~/.local/share/lerd/service-tuning/mysql.conf`): commits are flushed once a second
+and there's no binary log, so seeders run fast. Migrations stay slowish (0.2-1 s
+each): MySQL always flushes table creation to disk, and flushes are slow on this SSD.
 
 ### Lerd in Claude Code and Codex (MCP)
 

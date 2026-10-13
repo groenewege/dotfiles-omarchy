@@ -1,5 +1,6 @@
-# Open the Lerd site of the current project (https://<folder>.test) in the browser.
+# Open the Lerd site of the current project in the browser. `lerd open` picks
+# http or https (after `lerd secure`) and any custom domain.
 name = "Open site"
-description = "Open https://<project>.test"
+description = "Open the project's .test site (lerd open)"
 type = "command"
-command = "{{opener}} \"https://$(basename '{{.WorkDir}}').test\""
+command = "cd '{{.WorkDir}}' && lerd open"
