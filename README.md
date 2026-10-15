@@ -318,6 +318,9 @@ can't take arguments, hence the list.
   herdr-plus project, else a plain workspace in the folder. herdr gets a
   terminal window when it has none.
 
+Each goes to its own Omarchy workspace: herdr on 1, Zed on 2, the browser on 3
+(variables at the top of the script), and you end up on herdr.
+
 ### The database
 
 `project-db` (the **db** tab of a herdr-plus project) opens the project's

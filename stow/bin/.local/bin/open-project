@@ -10,9 +10,15 @@
 # open, else its herdr-plus project (setup-project writes one: claude, lazygit,
 # db and a shell), else a plain workspace in the folder. herdr gets a terminal
 # window if it has none.
+#
+# Each window goes to its own Omarchy workspace (herdr 1, editor 2, browser 3),
+# and you end up on herdr.
 set -euo pipefail
 
 SITES_DIR="$HOME/Sites"
+HERDR_WORKSPACE=1
+EDITOR_WORKSPACE=2
+BROWSER_WORKSPACE=3
 
 die() {
   printf '\033[31m%s\033[0m\n' "$*" >&2
@@ -34,8 +40,10 @@ dir="$SITES_DIR/$folder"
 [[ -d $dir ]] || die "No project $folder in $SITES_DIR."
 
 # Site: lerd sites lists each site's folder in its last column.
+site=false
 if lerd sites 2>/dev/null | awk -v d="$dir" '$NF == d { found = 1 } END { exit !found }'; then
   (cd "$dir" && setsid lerd open >/dev/null 2>&1 &)
+  site=true
 fi
 
 # Editor: Omarchy's default (Zed).
@@ -44,10 +52,12 @@ setsid omarchy-launch-editor "$dir" >/dev/null 2>&1 &
 # herdr
 herdr_running() { herdr status server 2>/dev/null | grep -q 'status: running'; }
 
+# Windows, from a snapshot of Hyprland's clients taken in $clients.
+clients=""
+
 # The window showing herdr: the terminal that a herdr client (not the server) runs in.
 herdr_window() {
-  local clients pid address
-  clients=$(hyprctl clients -j)
+  local pid address
   for pid in $(pgrep -x herdr); do
     [[ $(ps -o args= -p "$pid") == *" server"* ]] && continue
     while ((pid > 1)); do
@@ -95,12 +105,43 @@ else
   herdr workspace create --cwd "$dir" --label "$folder" --focus >/dev/null
 fi
 
+clients=$(hyprctl clients -j)
+herdr_window >/dev/null || $launched || launch_herdr
+
+# The editor window (Zed opens the folder in its existing window), and the
+# browser window the site's tab went to: the browser's most recently used one.
+editor_window() {
+  jq -er 'map(select(.class | test("zed"; "i"))) | min_by(.focusHistoryID) | .address' <<<"$clients"
+}
+browser_class=$(xdg-settings get default-web-browser 2>/dev/null || true)
+browser_class=${browser_class%.desktop}
+browser_window() {
+  jq -er --arg class "$browser_class" \
+    'map(select(.class | ascii_downcase == ($class | ascii_downcase))) | min_by(.focusHistoryID) | .address' <<<"$clients"
+}
+
+move_window() { hyprctl dispatch "hl.dsp.window.move({ workspace = \"$2\", follow = false, window = \"address:$1\" })" >/dev/null; }
+
+# The windows appear asynchronously: move each one once it's there (wait up to 10 s).
+want_herdr=true want_editor=true want_browser=$site herdr_address=""
+for _ in {1..50}; do
+  clients=$(hyprctl clients -j)
+  if $want_herdr && herdr_address=$(herdr_window); then
+    move_window "$herdr_address" "$HERDR_WORKSPACE"; want_herdr=false
+  fi
+  if $want_editor && address=$(editor_window); then
+    move_window "$address" "$EDITOR_WORKSPACE"; want_editor=false
+  fi
+  if $want_browser && address=$(browser_window); then
+    move_window "$address" "$BROWSER_WORKSPACE"; want_browser=false
+  fi
+  $want_herdr || $want_editor || $want_browser || break
+  sleep 0.2
+done
+
 # The browser raises its window a moment after lerd open returns; herdr goes
 # in front after that.
-if address=$(herdr_window); then
+if [[ -n $herdr_address ]]; then
   sleep 1
-  hyprctl dispatch "hl.dsp.focus({ window = \"address:$address\" })" >/dev/null 2>&1 ||
-    hyprctl dispatch focuswindow "address:$address" >/dev/null
-elif ! $launched; then
-  launch_herdr
+  hyprctl dispatch "hl.dsp.focus({ window = \"address:$herdr_address\" })" >/dev/null
 fi
