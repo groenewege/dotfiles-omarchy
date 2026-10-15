@@ -157,7 +157,7 @@ tmux sessions. Super+Ctrl+K lists every binding; prefix ? shows herdr's help.
 | prefix [ | Copy mode (scroll back, select) |
 | prefix d | Detach (herdr keeps running) |
 | prefix ↑ ★ | herdr-plus: projects |
-| prefix ↓ ★ | herdr-plus: quick actions (open site, export / import database…) |
+| prefix ↓ ★ | herdr-plus: quick actions (open site, GitHub repo, export / import database…) |
 
 ## Zed
 
