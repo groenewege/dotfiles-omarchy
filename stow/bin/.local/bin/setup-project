@@ -9,7 +9,7 @@
 # .env.example, PHP 8.3 pin (unless the project picks a version), Lerd site
 # config (wizard the first time), composer install, lerd env, app key, migrate:fresh --seed,
 # test database (created; migrated and seeded when the tests expect it), storage:link,
-# npm install + build, boost:install (when laravel/boost is required).
+# npm install + build, boost:install (when laravel/boost is required), lerd open.
 # A failed npm step doesn't stop the setup: it is listed again at the end.
 set -euo pipefail
 
@@ -240,10 +240,11 @@ else
 fi
 
 url=$(grep -E '^APP_URL=' .env | cut -d= -f2- | tr -d '"' || true)
+lerd open || note "lerd open failed; the site is ${url:-http://$(basename "$PWD").test}"
 if ((${#problems[@]})); then
   step "Done, with problems to fix:"
   for p in "${problems[@]}"; do note "- $p"; done
-  note "Site: ${url:-http://$(basename "$PWD").test} (lerd open)"
+  note "Site: ${url:-http://$(basename "$PWD").test}"
   exit 1
 fi
-step "Done: ${url:-http://$(basename "$PWD").test} (lerd open)"
+step "Done: ${url:-http://$(basename "$PWD").test}"

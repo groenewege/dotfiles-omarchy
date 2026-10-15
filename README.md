@@ -276,6 +276,8 @@ setup-project                        # set up the project in the current folder
    runs `npm install`, which rewrites the lockfile. A failed npm step doesn't stop the setup:
    it's listed at the end, and the script exits with an error.
 10. `php artisan boost:install`, when the project requires `laravel/boost`.
+11. `lerd open`. The `setup-project` shell function (in `functions.sh`) then moves your
+    terminal into the project folder, which the script itself can't do.
 
 Lerd's own `lerd setup` does something similar with a checklist, but it runs
 `migrate` instead of `migrate:fresh --seed` and doesn't install Boost.

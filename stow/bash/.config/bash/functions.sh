@@ -36,6 +36,19 @@ scheduler() {
   done
 }
 
+# setup-project (stow/bin/.local/bin) runs in its own shell, so it can't move
+# this one into the project it cloned; this does, afterwards (same folder rule:
+# the second argument, else the repo name).
+setup-project() {
+  local status=0 dir
+  command setup-project "$@" || status=$?
+  if [[ $# -gt 0 && $1 != -* ]]; then
+    dir="$HOME/Sites/${2:-$(basename "${1%.git}")}"
+    [[ -d $dir ]] && cd "$dir"
+  fi
+  return "$status"
+}
+
 # Databases on Lerd's MySQL (the mysql shim connects to it by default).
 db() {
   case "$1" in
