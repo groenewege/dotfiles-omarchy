@@ -2,3 +2,4 @@
 # One package per line; '#' starts a comment.
 
 worktrunk-bin    # `wt` git worktree manager (AUR is newer than extra/worktrunk)
+lazysql-bin      # database TUI (project-db); the AUR's lazysql package lags behind

@@ -1,0 +1,6 @@
+# Dump every table of the project's database to ~/Downloads (lerd db export,
+# through project-db). A notification says where the file went.
+name = "Export database"
+description = "Dump the project's database to ~/Downloads (lerd db export)"
+type = "command"
+command = "cd '{{.WorkDir}}' && project-db export"

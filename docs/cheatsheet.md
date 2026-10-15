@@ -13,6 +13,7 @@ herdr's, and Zed's command palette (**Ctrl+Shift+P**) shows each command's key.
 - [Terminals](#terminals)
 - [herdr](#herdr)
 - [Zed](#zed)
+- [lazysql](#lazysql)
 - [Claude Code](#claude-code)
 - [Shell](#shell)
 
@@ -156,7 +157,7 @@ tmux sessions. Super+Ctrl+K lists every binding; prefix ? shows herdr's help.
 | prefix [ | Copy mode (scroll back, select) |
 | prefix d | Detach (herdr keeps running) |
 | prefix ↑ ★ | herdr-plus: projects |
-| prefix ↓ ★ | herdr-plus: quick actions |
+| prefix ↓ ★ | herdr-plus: quick actions (open site, export / import database…) |
 
 ## Zed
 
@@ -188,6 +189,25 @@ Zed's Linux keys are its macOS keys with Ctrl instead of Cmd.
 | Ctrl+Shift+C ★ | Copy relative path |
 | Ctrl+Shift+R ★ | Run the nearest task |
 | Ctrl+Shift+F ★ | Test the current file |
+
+## lazysql
+
+`project-db`, or the **db** tab in herdr. `?` shows every key, `q` quits.
+
+| Keys | Does |
+|---|---|
+| H / L | Focus the table list / the table |
+| 1 … 5 | Records / Columns / Constraints / Foreign keys / Indexes |
+| / | Filter the rows with a WHERE clause (Esc in the filter clears it) |
+| K / J | Sort ascending / descending on the column |
+| > / < | Next / previous page |
+| c | Edit the cell (Enter to keep the change) |
+| C | Set the cell to NULL, empty or DEFAULT |
+| o / O / d | Insert a row / duplicate it / delete it |
+| Ctrl+S | **Save**: write the pending changes to the database |
+| Ctrl+E | SQL editor (Ctrl+R runs the query) |
+| E | Export to CSV (~/Downloads) |
+| Y | Copy rows as SQL INSERTs, JSON, CSV… |
 
 ## Claude Code
 
@@ -221,9 +241,9 @@ Added by this repo (see `stow/bash/.config/bash/`):
 | Tests | `p` (pest or phpunit), `pf <filter>`, `pp` (parallel), `t`/`tf` (phpunit) |
 | Composer / npm | `ci` `cu` `cr` `cda`, `nr` `nrd` `nrb` |
 | Git | `commit [msg]` (no message: Claude writes one), `gll`, `nah`, `uncommit`, `push`, `pull`, `gpo`, `git-prune-local`, `clone owner/repo`, `lg` |
-| Databases | `db create\|drop\|refresh\|list <name>` (Lerd MySQL) |
+| Databases | `db create\|drop\|refresh\|list <name>` (Lerd MySQL), `project-db [export\|import <file>]` (lazysql, dumps) |
 | AI | `c` (claude), `ccc` (claude --continue), `cxy` (codex without approvals) |
-| Projects | `setup-project [owner/repo]` (clone + full Lerd setup), `sites`, `dotfiles` |
+| Projects | `setup-project [owner/repo]` (clone + full Lerd setup), `open-project [folder]` / `workon` (herdr, Zed and the site), `sites`, `dotfiles` |
 | Lerd | `tunnel` (`lerd share`), `phpserve` (plain `php -S` on port 8888) |
 | Files | `l` / `ll` (eza), `cat` (bat), `top` (btm), `mkd`, `zed`, `o` (open the folder), Ctrl+G (fuzzy cd) |
 | SSH | `copykey`, `sshconfig`, `removehost <host>`, `hostfile` |

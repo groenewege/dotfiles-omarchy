@@ -16,4 +16,8 @@ name = "lazygit"
 command = "lazygit"
 
 [[tabs]]
+name = "db"
+command = "project-db"
+
+[[tabs]]
 name = "terminal"

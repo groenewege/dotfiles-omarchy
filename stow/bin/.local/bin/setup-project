@@ -52,8 +52,8 @@ fi
 
 [[ -f artisan ]] || die "No artisan file in $(pwd): not a Laravel project."
 
-# herdr-plus project (prefix+up in herdr): claude, lazygit and a shell, in the
-# project folder. Done first, so it's there even if a later step fails.
+# herdr-plus project (prefix+up in herdr): claude, lazygit, the database
+# (project-db) and a shell, in the project folder. Done first, so it's there even if a later step fails.
 step "herdr-plus project"
 project=$(basename "$PWD")
 working_dir=${PWD/#"$HOME"/\~}
@@ -72,6 +72,10 @@ command = "claude"
 [[tabs]]
 name = "lazygit"
 command = "lazygit"
+
+[[tabs]]
+name = "db"
+command = "project-db"
 
 [[tabs]]
 name = "terminal"

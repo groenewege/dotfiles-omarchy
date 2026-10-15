@@ -231,7 +231,7 @@ mv hosts ~/.ssh/config.d/hosts && chmod 600 ~/.ssh/config.d/hosts
 
 Project files (one per Laravel project, opened with prefix+up in herdr) are
 personal, so they aren't in the repo. `setup-project` creates one for each
-project it sets up (tabs: claude, lazygit, terminal). For anything else, start
+project it sets up (tabs: claude, lazygit, db, terminal). For anything else, start
 from `templates/herdr-project.toml`.
 
 ## Laravel with Lerd
@@ -251,7 +251,7 @@ setup-project                        # set up the project in the current folder
 
 1. Clone with `gh repo clone` (or `git clone` for a URL), unless you're already in the project.
    Then check out `develop` (staging and main/master deploy automatically), when the repo has one.
-   Either way, add a herdr-plus project for it (tabs: claude, lazygit, terminal), unless one exists.
+   Either way, add a herdr-plus project for it (tabs: claude, lazygit, db, terminal), unless one exists.
 2. Copy `.env.example` to `.env` when there's no `.env` yet.
 3. `lerd isolate 8.3`, unless the project already picks a version
    (`.php-version`, or `php_version` in `.lerd.yaml`). Without it Lerd takes the
@@ -299,6 +299,44 @@ Lerd also serves git worktrees automatically at `<branch>.<site>.test`.
 and there's no binary log, so seeders run fast. Migrations stay slowish (0.2-1 s
 each): MySQL always flushes table creation to disk, and flushes are slow on this SSD.
 
+### Working on a project
+
+```bash
+open-project epidemiologie   # or: workon epidemiologie (Tab completes ~/Sites folders)
+open-project                 # pick the project from a list
+```
+
+Or **Super+Space**, type `project` (or `workon`), Enter, pick the project
+(`stow/omarchy/.config/omarchy/extensions/omarchy-menu.jsonc`). The launcher
+can't take arguments, hence the list.
+
+`open-project` (in `stow/bin/.local/bin/`) opens:
+
+- the site in the browser (`lerd open`), when Lerd serves the folder;
+- the folder in the default editor (Zed);
+- the project's herdr workspace: the existing one when it's open, else its
+  herdr-plus project, else a plain workspace in the folder. herdr gets a
+  terminal window when it has none.
+
+### The database
+
+`project-db` (the **db** tab of a herdr-plus project) opens the project's
+database in [lazysql](https://github.com/jorgerojas26/lazysql), a TUI like
+lazygit, using the `DB_*` settings in `.env` (with `127.0.0.1` for Lerd's
+`lerd-mysql` host). Dumps go through Lerd:
+
+```bash
+project-db                     # browse and edit in lazysql
+project-db export              # every table → ~/Downloads/<database>-<date>.sql
+project-db import dump.sql     # replace the database with a dump (emptied first)
+```
+
+In herdr, the quick actions (prefix ↓) **Export database** and **Import
+database** do the same and report back with a notification. `lerd db
+export|import` work directly too. If lazysql ever falls short, Beekeeper
+Studio (`beekeeper-studio-bin`) is the closest to TablePlus; TablePlus's own
+Linux build is still a beta (no Arch package, Wayland issues).
+
 ### Lerd in Claude Code and Codex (MCP)
 
 `60-ai.sh` registers Lerd's MCP server (`lerd mcp`) in Claude Code (user
@@ -345,8 +383,6 @@ Planned, not built yet. The tools are already installed:
   template: copy ignored files, `lerd worktree setup`, a `_testing` database,
   pint and tests before merge.
 - A `develop` default-branch helper (`wt config state default-branch set develop`).
-- A Linux port of my `workon` script (Zed, browser at `APP_URL`, herdr / herdr-plus
-  workspace, a database GUI).
 - Optional: the worktrunk Claude plugin, T3 Code (`omarchy-install-ai-t3-code`),
   Tailscale + `lerd lan:share` for remote access.
-- Linux stand-ins for Tower (lazygit / Zed's git panel) and TablePlus.
+- A Linux stand-in for Tower (lazygit / Zed's git panel).

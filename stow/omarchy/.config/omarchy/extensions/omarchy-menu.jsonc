@@ -1,0 +1,9 @@
+{
+  // Our entries in the Omarchy menu (Super+Space). Omarchy's own menu and the
+  // list of fields are in /usr/share/omarchy/default/omarchy/omarchy-menu.jsonc.
+  // A dotted id ("personal.notes") puts a row in a submenu; reusing one of
+  // Omarchy's ids changes that row.
+
+  // Type "project" or "workon": pick a folder in ~/Sites, then herdr, Zed and the site open.
+  "open-project": {"icon":"","label":"Open project","description":"herdr, Zed and the site of a ~/Sites project","aliases":["workon"],"action":"open-project"},
+}

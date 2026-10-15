@@ -20,6 +20,9 @@ export DOTFILES="${DOTFILES%/stow/bash/*}"
 # Our starship prompt (Omarchy's prompt plus a few extra modules).
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 
+# lazysql: no usage statistics, and no prompt about them on first run.
+export LAZYSQL_NO_TELEMETRY=1
+
 # Larger shared history.
 export HISTSIZE=50000
 export HISTFILESIZE=100000

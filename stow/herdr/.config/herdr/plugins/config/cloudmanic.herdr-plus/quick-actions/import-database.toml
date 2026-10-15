@@ -1,0 +1,8 @@
+# Replace the project's database with a dump from ~/Downloads (lerd db import
+# --fresh, through project-db): the database is emptied first, so it ends up
+# exactly as the dump. A notification says when it's done.
+name = "Import database"
+description = "Replace the project's database with a dump from ~/Downloads (lerd db import --fresh)"
+type = "select"
+options_command = "project-db dumps"
+command = "cd '{{.WorkDir}}' && project-db import '{{.Value}}'"

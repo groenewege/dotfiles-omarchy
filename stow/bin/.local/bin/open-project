@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+# Start working on a project in ~/Sites (also: workon, and "Open project" in
+# the Omarchy menu).
+#
+#   open-project <folder>   open ~/Sites/<folder>
+#   open-project            pick the folder from a list
+#
+# Opens the site in the browser (when Lerd serves the folder), the folder in the
+# editor (Zed), and the project's herdr workspace: the existing one if it is
+# open, else its herdr-plus project (setup-project writes one: claude, lazygit,
+# db and a shell), else a plain workspace in the folder. herdr gets a terminal
+# window if it has none.
+set -euo pipefail
+
+SITES_DIR="$HOME/Sites"
+
+die() {
+  printf '\033[31m%s\033[0m\n' "$*" >&2
+  [[ -t 2 ]] || notify-send -u critical "Open project" "$*" 2>/dev/null || true
+  exit 1
+}
+
+case ${1:-} in
+  -h|--help) sed -n '/^set /q; 2,$p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+esac
+
+folder=${1:-}
+if [[ -z $folder ]]; then
+  mapfile -t folders < <(find "$SITES_DIR" -mindepth 1 -maxdepth 1 -type d ! -name '.*' -printf '%f\n' | sort)
+  ((${#folders[@]})) || die "No projects in $SITES_DIR."
+  folder=$(omarchy-menu-select "Project" "${folders[@]}") || exit 0
+fi
+dir="$SITES_DIR/$folder"
+[[ -d $dir ]] || die "No project $folder in $SITES_DIR."
+
+# Site: lerd sites lists each site's folder in its last column.
+if lerd sites 2>/dev/null | awk -v d="$dir" '$NF == d { found = 1 } END { exit !found }'; then
+  (cd "$dir" && setsid lerd open >/dev/null 2>&1 &)
+fi
+
+# Editor: Omarchy's default (Zed).
+setsid omarchy-launch-editor "$dir" >/dev/null 2>&1 &
+
+# herdr
+herdr_running() { herdr status server 2>/dev/null | grep -q 'status: running'; }
+
+# The window showing herdr: the terminal that a herdr client (not the server) runs in.
+herdr_window() {
+  local clients pid address
+  clients=$(hyprctl clients -j)
+  for pid in $(pgrep -x herdr); do
+    [[ $(ps -o args= -p "$pid") == *" server"* ]] && continue
+    while ((pid > 1)); do
+      address=$(jq -r --argjson pid "$pid" '.[] | select(.pid == $pid) | .address' <<<"$clients")
+      [[ -n $address ]] && { printf '%s\n' "$address"; return 0; }
+      pid=$(ps -o ppid= -p "$pid" | tr -d ' ')
+    done
+  done
+  return 1
+}
+
+launched=false
+launch_herdr() {
+  setsid uwsm-app -- xdg-terminal-exec --dir="$dir" herdr >/dev/null 2>&1 &
+  launched=true
+}
+
+if ! herdr_running; then
+  launch_herdr
+  for _ in {1..50}; do herdr_running && break; sleep 0.2; done
+  herdr_running || die "herdr didn't start."
+fi
+
+# The herdr-plus project for this folder, by its working_dir.
+project=""
+if projects_dir="$(herdr plugin config-dir cloudmanic.herdr-plus 2>/dev/null)/projects" && [[ -d $projects_dir ]]; then
+  if file=$(grep -lsxF -e "working_dir = \"${dir/#"$HOME"/\~}\"" -e "working_dir = \"$dir\"" "$projects_dir"/*.toml | head -1) && [[ -n $file ]]; then
+    project=$(sed -nE 's/^name = "(.*)"$/\1/p' "$file" | head -1)
+  fi
+fi
+label=${project:-$folder}
+
+workspace=$(herdr workspace list | jq -r --arg label "$label" \
+  'first(.result.workspaces[] | select(.label == $label) | .workspace_id) // empty')
+if [[ -n $workspace ]]; then
+  herdr workspace focus "$workspace" >/dev/null
+elif [[ -n $project ]]; then
+  # herdr-plus isn't on PATH; it finds herdr through HERDR_SOCKET_PATH, which
+  # herdr only sets inside its own panes.
+  herdr_plus=$(compgen -G "$HOME/.config/herdr/plugins/github/cloudmanic.herdr-plus-*/bin/herdr-plus" | head -1) ||
+    die "herdr-plus isn't installed (./install.sh --only ai)."
+  HERDR_SOCKET_PATH=$(herdr status server | awk '/socket:/ { print $2 }') \
+    "$herdr_plus" open "$project" >/dev/null || die "herdr-plus couldn't open $project."
+else
+  herdr workspace create --cwd "$dir" --label "$folder" --focus >/dev/null
+fi
+
+# The browser raises its window a moment after lerd open returns; herdr goes
+# in front after that.
+if address=$(herdr_window); then
+  sleep 1
+  hyprctl dispatch "hl.dsp.focus({ window = \"address:$address\" })" >/dev/null 2>&1 ||
+    hyprctl dispatch focuswindow "address:$address" >/dev/null
+elif ! $launched; then
+  launch_herdr
+fi

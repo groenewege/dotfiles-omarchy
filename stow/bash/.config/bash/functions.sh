@@ -49,6 +49,13 @@ setup-project() {
   return "$status"
 }
 
+# open-project and workon complete the folder names in ~/Sites.
+_sites_folders() {
+  local IFS=$'\n'
+  COMPREPLY=($(cd ~/Sites 2>/dev/null && compgen -d -- "${COMP_WORDS[COMP_CWORD]}"))
+}
+complete -F _sites_folders open-project workon
+
 # Databases on Lerd's MySQL (the mysql shim connects to it by default).
 db() {
   case "$1" in

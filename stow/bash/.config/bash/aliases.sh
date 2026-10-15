@@ -24,6 +24,7 @@ alias cda="composer dump-autoload -o"
 alias phpserve="php -S localhost:8888"
 alias tunnel="lerd share"
 alias sites="cd ~/Sites"
+alias workon="open-project"
 
 # JavaScript
 alias nr="npm run"

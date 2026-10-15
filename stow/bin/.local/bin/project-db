@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# The database of the Laravel project you are in (found through its .env).
+#
+#   project-db                 browse and edit it in lazysql
+#   project-db export          dump every table to ~/Downloads/<database>-<date>.sql
+#   project-db import <file>   replace the database with a dump (emptied first)
+#   project-db dumps           list the .sql files in ~/Downloads, newest first
+#
+# lazysql connects from this machine, so a Lerd host (lerd-mysql...) becomes
+# 127.0.0.1. export and import use `lerd db export/import`. Their result also
+# shows as a notification, for the herdr-plus quick actions that run them.
+set -euo pipefail
+
+DUMPS_DIR="$HOME/Downloads"
+export LAZYSQL_NO_TELEMETRY=1
+
+say() {
+  printf '%s\n' "$*"
+  [[ -t 1 ]] || notify-send "Database" "$*" 2>/dev/null || true
+}
+die() {
+  printf '\033[31m%s\033[0m\n' "$*" >&2
+  [[ -t 2 ]] || notify-send -u critical "Database" "$*" 2>/dev/null || true
+  exit 1
+}
+
+case ${1:-} in
+  -h|--help) sed -n '/^set /q; 2,$p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+  dumps)
+    shopt -s nullglob
+    dumps=("$DUMPS_DIR"/*.sql)
+    ((${#dumps[@]})) || exit 0
+    ls -t "${dumps[@]}" | while IFS= read -r f; do
+      printf '%s\t%s\n' "${f/#"$HOME"/\~}" "$(date -r "$f" '+%Y-%m-%d %H:%M')"
+    done
+    exit 0
+    ;;
+esac
+
+# The project root: the nearest folder up from here with a .env.
+root=$PWD
+while [[ $root != / && ! -f $root/.env ]]; do root=$(dirname "$root"); done
+[[ -f $root/.env ]] || die "No .env here or above: not in a Laravel project."
+cd "$root"
+
+env_value() { grep -E "^$1=" .env | tail -1 | cut -d= -f2- | tr -d "\"'" || true; }
+connection=$(env_value DB_CONNECTION)
+host=$(env_value DB_HOST)
+database=$(env_value DB_DATABASE)
+on_lerd() { [[ -z $host || $host =~ ^(lerd-[a-z0-9-]+|127\.0\.0\.1|localhost)$ ]]; }
+
+case ${1:-} in
+  export)
+    on_lerd || die "DB_HOST is '$host', not Lerd's database: not exporting."
+    file="$DUMPS_DIR/$database-$(date +%Y%m%d-%H%M%S).sql"
+    mkdir -p "$DUMPS_DIR"
+    lerd db export -o "$file" >/dev/null || die "Exporting $database failed (run project-db export in a terminal to see why)."
+    say "Exported $database to ${file/#"$HOME"/\~}"
+    ;;
+  import)
+    file=${2:-}
+    [[ -n $file ]] || die "Usage: project-db import <file.sql>"
+    file=${file/#\~/$HOME}
+    [[ -f $file ]] || die "No such file: $file"
+    on_lerd || die "DB_HOST is '$host', not Lerd's database: not importing."
+    lerd db import --fresh "$file" >/dev/null || die "Importing into $database failed (run project-db import in a terminal to see why)."
+    say "Imported ${file##*/} into $database"
+    ;;
+  '')
+    command -v lazysql >/dev/null || die "lazysql isn't installed (./install.sh --only packages)."
+    uri() { jq -rn --arg s "$1" '$s | @uri'; }
+    on_lerd && host=127.0.0.1
+    user=$(uri "$(env_value DB_USERNAME)")
+    password=$(uri "$(env_value DB_PASSWORD)")
+    port=$(env_value DB_PORT)
+    case $connection in
+      mysql|mariadb) url="mysql://$user:$password@$host:${port:-3306}/$database" ;;
+      pgsql)         url="postgres://$user:$password@$host:${port:-5432}/$database?sslmode=disable" ;;
+      sqlite)        url=$(realpath "${database:-database/database.sqlite}") ;;
+      *)             die "DB_CONNECTION is '$connection': project-db knows mysql, mariadb, pgsql and sqlite." ;;
+    esac
+    exec lazysql "$url"
+    ;;
+  *) die "Unknown command: $1 (see project-db --help)" ;;
+esac
