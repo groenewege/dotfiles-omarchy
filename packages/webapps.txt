@@ -9,3 +9,4 @@ Notion   | https://www.notion.so/groenewege/     | https://cdn.jsdelivr.net/gh/h
 Mailpit  | http://localhost:8025/                | https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/mailpit.png
 Pinboard | https://pinboard.in/u:groenewege/     | https://pinboard.in/apple-touch-icon.png
 GitHub   | https://github.com/groenewege         | https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/github-light.png
+Mite     | https://groenewege.mite.de/           | https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/mite.png
