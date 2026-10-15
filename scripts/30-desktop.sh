@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Desktop apps and look: Zed, 1Password, web apps, theme.
+# Desktop apps and look: Zed, 1Password, web apps, Chromium bookmarks, theme.
 set -euo pipefail
 source "$DOTFILES/lib/common.sh"
 
@@ -56,6 +56,27 @@ done < <(list_from "$DOTFILES/packages/webapps.txt")
 if [[ -f "$apps_dir/Gmail.desktop" && $(xdg-mime query default x-scheme-handler/mailto) != Gmail.desktop ]]; then
   xdg-mime default Gmail.desktop x-scheme-handler/mailto
   ok "Gmail now opens mailto: links"
+fi
+
+# Chromium bookmarks, kept in config/chromium/Bookmarks. Copied, not linked:
+# Chromium saves the file by replacing it. A machine without bookmarks gets the
+# repo's; otherwise the machine's bookmarks are copied into the repo, so
+# `git diff` shows what changed. Chromium's checksum covers the bookmarks but
+# not their last-used dates, so opening a bookmark is not a change.
+bookmarks_repo="$DOTFILES/config/chromium/Bookmarks"
+bookmarks="$HOME/.config/chromium/Default/Bookmarks"
+if [[ ! -f $bookmarks ]] || ! jq -e '[.. | .url? // empty] | length > 0' "$bookmarks" >/dev/null 2>&1; then
+  if pgrep -x chromium >/dev/null; then
+    warn "close Chromium and run ./install.sh --only desktop to restore its bookmarks"
+  else
+    install -Dm600 "$bookmarks_repo" "$bookmarks"
+    ok "Chromium bookmarks restored from $(pretty "$bookmarks_repo")"
+  fi
+elif [[ $(jq -r .checksum "$bookmarks") == "$(jq -r .checksum "$bookmarks_repo")" ]]; then
+  ok "Chromium bookmarks match the repo"
+else
+  install -m644 "$bookmarks" "$bookmarks_repo"
+  warn "Chromium bookmarks changed; copied into the repo (check git diff and commit)"
 fi
 
 # Login screen keyboard. SDDM runs its own Hyprland with Omarchy's

@@ -1,0 +1,102 @@
+{
+   "checksum": "ac56d104395c762c76b519e84c75b8a7",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "date_added": "13436147720388169",
+            "date_last_used": "13436225085552753",
+            "guid": "1e98edd8-5592-4c03-9639-32b574be1e98",
+            "id": "5",
+            "meta_info": {
+               "power_bookmark_meta": ""
+            },
+            "name": "Mailpit",
+            "type": "url",
+            "url": "http://localhost:8025/"
+         }, {
+            "date_added": "13436224043567249",
+            "date_last_used": "13436572404146828",
+            "guid": "01728211-2c45-496c-a614-f2573d432705",
+            "id": "7",
+            "meta_info": {
+               "power_bookmark_meta": ""
+            },
+            "name": "Pinboard",
+            "type": "url",
+            "url": "https://pinboard.in/u:groenewege/"
+         }, {
+            "date_added": "13436571484561716",
+            "date_last_used": "13436573046744952",
+            "guid": "e08e2124-c2a1-4d4e-b53f-59231ea045f6",
+            "id": "9",
+            "meta_info": {
+               "power_bookmark_meta": ""
+            },
+            "name": "Github",
+            "type": "url",
+            "url": "https://github.com/groenewege"
+         }, {
+            "date_added": "13436576410681789",
+            "date_last_used": "13436576521137180",
+            "guid": "a1a98e2b-a8bb-499e-aa42-4420d044c12c",
+            "id": "11",
+            "meta_info": {
+               "power_bookmark_meta": ""
+            },
+            "name": "Mite",
+            "type": "url",
+            "url": "https://groenewege.mite.de/"
+         }, {
+            "date_added": "13436576437237070",
+            "date_last_used": "0",
+            "guid": "b46038d6-3147-4d60-9a75-3c2f76c00332",
+            "id": "12",
+            "meta_info": {
+               "power_bookmark_meta": ""
+            },
+            "name": "Gmail",
+            "type": "url",
+            "url": "https://mail.google.com/mail/u/0/#inbox"
+         }, {
+            "date_added": "13436576498272424",
+            "date_last_used": "0",
+            "guid": "d2dc55e1-2159-4fa7-a082-8c6a92336bb5",
+            "id": "14",
+            "meta_info": {
+               "power_bookmark_meta": ""
+            },
+            "name": "Notion",
+            "type": "url",
+            "url": "https://app.notion.com/p/groenewege/Dashboard-72a8c92384844c5e9cae70926b439118"
+         } ],
+         "date_added": "13436147417778424",
+         "date_last_used": "0",
+         "date_modified": "13436576498272424",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "Bookmarks bar",
+         "type": "folder"
+      },
+      "other": {
+         "children": [  ],
+         "date_added": "13436147417778424",
+         "date_last_used": "0",
+         "date_modified": "13436147720388169",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "Other bookmarks",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13436147417778424",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "Mobile bookmarks",
+         "type": "folder"
+      }
+   },
+   "version": 1
+}

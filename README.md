@@ -19,7 +19,8 @@ settings on top, so `omarchy-update` keeps working and the repo stays small.
 | Editor | Zed, installed through Omarchy (omazed keeps its theme in sync) |
 | PHP / MySQL | [Lerd](https://lerd.sh): PHP 8.3, MySQL, `http://<project>.test` for every folder in `~/Sites` (HTTPS with `lerd secure`) |
 | AI | Claude Code, Codex (Omarchy's auto-updating stubs), my skills and plugins, herdr + herdr-plus, worktrunk |
-| Apps | 1Password, Gmail, Notion, Pinboard and Mailpit (Lerd's mail catcher) web apps; HEY and Basecamp removed |
+| Apps | 1Password, Gmail, Notion, Pinboard, GitHub, Mite and Mailpit (Lerd's mail catcher) web apps; HEY and Basecamp removed |
+| Browser | Chromium bookmarks kept in the repo (Chromium has no sync of its own) |
 | Git / SSH | ed25519 key, GitHub over SSH, signed commits; server list in a private file |
 
 ## Fresh install
@@ -112,7 +113,7 @@ scripts/
   05-hardware.sh           model-specific fixes (16" MacBook Pro 2019: screen on the Intel GPU)
   10-packages.sh           install pacman.txt and aur.txt
   20-cleanup.sh            remove webapps-remove.txt and remove.txt
-  30-desktop.sh            Zed, 1Password, web apps, Gmail as mailto handler, login screen keyboard, theme
+  30-desktop.sh            Zed, 1Password, web apps, Gmail as mailto handler, Chromium bookmarks, login screen keyboard, theme
   40-link.sh               stow everything in stow/, hook into Omarchy-owned files
   50-dev.sh                Lerd, PHP 8.3, MySQL, park ~/Sites, global Composer tools
   60-ai.sh                 skills, Claude plugins, Codex config, Lerd MCP, herdr plugin + integrations
@@ -120,6 +121,7 @@ scripts/
 stow/<package>/            files laid out as in $HOME, symlinked with GNU stow
 config/herdr.toml          block appended to Omarchy's herdr config
 config/sddm/               login screen (SDDM) keyboard layout, copied to /etc
+config/chromium/Bookmarks  Chromium bookmarks (the desktop step restores or saves them)
 config/macbook-pro-16/     boot option, udev rules and Hyprland GPU settings for MacBookPro16,1
 ai/AGENTS.md               shared instructions → ~/.claude/CLAUDE.md and ~/.codex/AGENTS.md
 ai/skills/                 skills for both Claude Code and Codex
@@ -160,6 +162,11 @@ signing with `~/.ssh/id_ed25519`, which `ssh-github` creates.
 
 Some files are **copied once** instead (`templates/codex-config.toml`), because
 the app rewrites them constantly.
+
+Chromium's bookmarks are copied both ways by the `desktop` step: a machine
+without bookmarks gets `config/chromium/Bookmarks` (close Chromium first), and
+new bookmarks on this machine are copied into the repo, so after adding some,
+run `./install.sh --only desktop` (or `./update.sh`) and commit the change.
 
 ### After an Omarchy update
 
