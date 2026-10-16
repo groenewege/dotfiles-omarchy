@@ -121,6 +121,14 @@ else
   lerd init
 fi
 
+# Lerd's watcher on ~/Sites can write the site's nginx config as soon as the
+# clone appears, before .php-version exists, and nothing rewrites it: the site
+# then runs on the newest PHP while Lerd reports the pinned one (happened with
+# epidemiologie: 8.5 instead of 8.3). Pinning again rewrites the config.
+if [[ -f .php-version ]]; then
+  lerd isolate "$(<.php-version)" >/dev/null
+fi
+
 step "composer install"
 composer install
 
