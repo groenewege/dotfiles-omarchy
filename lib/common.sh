@@ -59,6 +59,18 @@ ensure_block() {
   rm -f "$tmp"
 }
 
+# Copy <src> to the root-owned <dest> unless it is already identical.
+# Succeeds only when the file changed.
+install_root_file() {
+  local src=$1 dest=$2
+  if cmp -s "$src" "$dest"; then
+    ok "$dest is up to date"
+    return 1
+  fi
+  sudo install -Dm644 "$src" "$dest"
+  ok "installed $dest"
+}
+
 # A free path in the backup dir for <rel>; a name that is already taken gets a
 # .1, .2... suffix, so a backup never overwrites an earlier one.
 backup_dest() {

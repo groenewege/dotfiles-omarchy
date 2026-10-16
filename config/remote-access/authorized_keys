@@ -1,0 +1,8 @@
+# Public keys allowed to SSH into this machine (over Tailscale), added to
+# ~/.ssh/authorized_keys by scripts/80-remote-access.sh. Public keys are safe
+# in a public repo. One key per line; '#' starts a comment.
+#
+# From the Mac: tailscale file cp ~/.ssh/id_rsa.pub omarchy: (lands in ~/Downloads)
+
+# gunthers-macbook-pro
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC0/iX2/OzwZM9tQ01W8SVrBES6wUwGMySzi7glefuuNNOi6rUNdN3YPBPO/UcUQNl/mot5dc6iK8paC/jc764yyd6Irt/cBrHeMG14Qrn5lr3G05xDPGw4iZjF5qRtdRZi6/1oMCc2zqUq8qwteUmafQNt0pWz1S9866O+t0JsWPCsS8rIvsluY49BzKOLmulmzvry8+0bcpq6FSP3g/zTFeOBZ16Ch7RCnhK0eVZTZPEaBffo2QVhWg4IhQWKQxa8NKyPqCnwpd+SR0Qaseqvwstb14UYLhflr9Wpu7YUNJQSCRe7zTUtE5acWt5Le9FGLorV6h8q5TUv8u+b0eQ1 gunther@groenewege.com

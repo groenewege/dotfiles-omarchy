@@ -6,18 +6,6 @@ source "$DOTFILES/lib/common.sh"
 
 model=$(cat /sys/class/dmi/id/product_name 2>/dev/null || true)
 
-# Copy <src> to the root-owned <dest> unless it is already identical.
-# Succeeds only when the file changed.
-install_root_file() {
-  local src=$1 dest=$2
-  if cmp -s "$src" "$dest"; then
-    ok "$dest is up to date"
-    return 1
-  fi
-  sudo install -Dm644 "$src" "$dest"
-  ok "installed $dest"
-}
-
 # 16-inch MacBook Pro (2019): gmux gives the internal panel to the AMD 5300M.
 # Shut Down, reboot and sleep then hang for over a minute (Touch Bar lit, fans
 # loud) until the T2 cuts the power and the Mac restarts by itself, and the

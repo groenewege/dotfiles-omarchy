@@ -22,6 +22,7 @@ settings on top, so `omarchy-update` keeps working and the repo stays small.
 | Apps | 1Password, Gmail, Notion, Pinboard, GitHub, Mite and Mailpit (Lerd's mail catcher) web apps; HEY and Basecamp removed |
 | Browser | Chromium bookmarks kept in the repo (Chromium has no sync of its own) |
 | Git / SSH | ed25519 key, GitHub over SSH, signed commits; server list in a private file |
+| Remote access | Tailscale, SSH server (keys only, through Tailscale only) for `ssh` and `herdr --remote` from the Mac |
 
 ## Fresh install
 
@@ -88,6 +89,7 @@ Files that were in the way are moved to `~/.dotfiles-backup/<timestamp>/`.
 - [ ] Add the new SSH key to Forge (Account > SSH Keys, then to each server).
       `copykey` copies it to the clipboard. Do the same on servers not managed by Forge.
 - [ ] Run `claude` and `codex` once to log in.
+- [ ] Remote access from the Mac: add its key and finish Tailscale (see [Remote access](#remote-access-from-the-mac)).
 - [ ] Open Zed and sign in; the PHP and Laravel extensions install themselves.
 - [ ] `lerd doctor` should be all green.
 - [ ] Set up your projects: `setup-project owner/repo` (see [Laravel with Lerd](#laravel-with-lerd)).
@@ -118,8 +120,10 @@ scripts/
   50-dev.sh                Lerd, PHP 8.3, MySQL, park ~/Sites, global Composer tools
   60-ai.sh                 skills, Claude plugins, Codex config, Lerd MCP, herdr plugin + integrations
   70-ssh-github.sh         SSH key + agent, gh login, upload auth and signing key
+  80-remote-access.sh      Tailscale, sshd (keys only, through Tailscale only), awake with the lid closed on the charger
 stow/<package>/            files laid out as in $HOME, symlinked with GNU stow
 config/herdr.toml          block appended to Omarchy's herdr config
+config/remote-access/      sshd and lid settings, public keys allowed to log in (remote-access step)
 config/sddm/               login screen (SDDM) keyboard layout, copied to /etc
 config/chromium/Bookmarks  Chromium bookmarks (the desktop step restores or saves them)
 config/macbook-pro-16/     boot option, udev rules and Hyprland GPU settings for MacBookPro16,1
@@ -233,6 +237,34 @@ sed '/^Host \*/,$d' ~/.ssh/config > ~/Desktop/hosts
 # 1Password document):
 mv hosts ~/.ssh/config.d/hosts && chmod 600 ~/.ssh/config.d/hosts
 ```
+
+### Remote access from the Mac
+
+The `remote-access` step installs Tailscale (Omarchy's installer: it prints a
+login link the first time), starts the SSH server with password login off, and
+lets SSH through the firewall only from the tailnet. This machine is the server,
+the Mac only a client. Then, once:
+
+1. **Let the Mac in.** Add its public key to `config/remote-access/authorized_keys`, then run
+   `./install.sh --only remote-access` and commit. To get the key over, on the Mac:
+   `tailscale file cp ~/.ssh/id_rsa.pub omarchy:` (or `id_ed25519.pub`; Taildrop, it lands in `~/Downloads`).
+2. **Tailscale admin console** (the Tailscale web app): on this machine, *Disable key
+   expiry*, or it drops off the tailnet after 180 days until you log in again.
+3. **On the Mac**, in `~/.ssh/config`:
+
+   ```
+   Host omarchy
+     HostName omarchy    # Tailscale's MagicDNS name (`tailscale status` lists them)
+     User gunther
+   ```
+
+   `ssh omarchy` should work now. Then install herdr on the Mac and run
+   `herdr --remote omarchy`: it attaches to this machine's herdr session (the same
+   workspaces as here). Add `--remote-keybindings server` to use this machine's
+   keys, including the herdr-plus ones.
+
+The machine must be awake. On the charger, closing the lid no longer suspends it
+(screen locked, still reachable); on battery it still does. Idle never suspends.
 
 ### herdr-plus projects
 
