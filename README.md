@@ -263,6 +263,10 @@ the Mac only a client. Then, once:
    workspaces as here). Add `--remote-keybindings server` to use this machine's
    keys, including the herdr-plus ones.
 
+   If it offers to install a matching herdr here (in `~/.local/bin`), answer **n**:
+   that second herdr would sit next to Omarchy's and not share its session. Run
+   `omarchy-update` here instead (0.9.1 here works with 0.9.3 on the Mac).
+
 The machine must be awake. On the charger, closing the lid no longer suspends it
 (screen locked, still reachable); on battery it still does. Idle never suspends.
 
