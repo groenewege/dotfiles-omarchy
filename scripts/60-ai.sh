@@ -17,12 +17,9 @@ else
 fi
 "$AI_DIR/install.sh"
 
-# Claude Code plugins. The first call installs Claude Code itself (mise stub).
-claude --version >/dev/null
-"$AI_DIR/plugins.sh"
-
 # Codex rewrites config.toml itself (project trust, hook hashes), so it is
-# copied once instead of linked.
+# copied once instead of linked. Before plugins.sh, whose `codex mcp add`
+# would otherwise create the file and the template would never be copied.
 if [[ -f $HOME/.codex/config.toml ]]; then
   ok "Codex config already exists; not overwriting"
 else
@@ -30,6 +27,11 @@ else
   cp "$DOTFILES/templates/codex-config.toml" "$HOME/.codex/config.toml"
   ok "Codex config created from template"
 fi
+
+# Claude Code plugins and Codex MCP servers. The first call installs Claude
+# Code itself (mise stub).
+claude --version >/dev/null
+"$AI_DIR/plugins.sh"
 
 # Lerd's MCP server (sites, services, databases, logs, workers) and its skill,
 # for Claude Code and Codex only (see install_lerd_skill in lib/common.sh).
