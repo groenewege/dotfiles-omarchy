@@ -10,6 +10,10 @@ source "$DOTFILES/lib/common.sh"
 if [[ -z ${DOTFILES_UPDATED:-} ]]; then
   log "Pulling latest dotfiles"
   git -C "$DOTFILES" pull --ff-only
+  if [[ -d $AI_DIR/.git ]]; then
+    log "Pulling latest dotfiles-ai"
+    git -C "$AI_DIR" pull --ff-only || warn "could not pull $(pretty "$AI_DIR") (local changes?); pull it by hand"
+  fi
   # Re-run the freshly pulled version of this script.
   DOTFILES_UPDATED=1 exec "$DOTFILES/update.sh" "$@"
 fi

@@ -1,58 +1,25 @@
 #!/usr/bin/env bash
-# AI tooling: skills for Claude Code and Codex, Claude plugins, Codex config,
-# Lerd's MCP server, herdr plugins and agent integrations.
+# AI tooling: instructions, skills and commands for Claude Code and Codex
+# (from the dotfiles-ai repo), Claude plugins, Codex config, Lerd's MCP server,
+# herdr plugins and agent integrations.
 #
 # claude, codex and gh are Omarchy's mise stubs: the first call installs the
 # real tool, and `omarchy-update` keeps it up to date.
 set -euo pipefail
 source "$DOTFILES/lib/common.sh"
 
-# Symlink a directory, backing up whatever was there before.
-link_dir() {
-  local src=$1 target=$2
-  if [[ -L $target && $(readlink -f "$target") == "$(readlink -f "$src")" ]]; then
-    return 0
-  fi
-  [[ -e $target || -L $target ]] && backup "$target"
-  mkdir -p "$(dirname "$target")"
-  ln -s "$src" "$target"
-  ok "linked $(pretty "$target")"
-}
-
-# Skills: ai/skills is shared, ai/skills-claude and ai/skills-codex hold
-# variants that differ per agent.
-for skill in "$DOTFILES"/ai/skills/*/; do
-  name=$(basename "$skill")
-  link_dir "${skill%/}" "$HOME/.claude/skills/$name"
-  link_dir "${skill%/}" "$HOME/.codex/skills/$name"
-done
-for skill in "$DOTFILES"/ai/skills-claude/*/; do
-  link_dir "${skill%/}" "$HOME/.claude/skills/$(basename "$skill")"
-done
-for skill in "$DOTFILES"/ai/skills-codex/*/; do
-  link_dir "${skill%/}" "$HOME/.codex/skills/$(basename "$skill")"
-done
-ok "skills linked"
+# AGENTS.md, skills, commands and the Claude plugin lists are shared with the
+# Mac through the dotfiles-ai repo, cloned next to this one.
+if [[ -d $AI_DIR/.git ]]; then
+  ok "dotfiles-ai found at $(pretty "$AI_DIR")"
+else
+  git clone https://github.com/groenewege/dotfiles-ai.git "$AI_DIR"
+fi
+"$AI_DIR/install.sh"
 
 # Claude Code plugins. The first call installs Claude Code itself (mise stub).
 claude --version >/dev/null
-known=$(claude plugin marketplace list --json | jq -r '.[].repo // empty')
-while IFS= read -r repo; do
-  if grep -qxF "$repo" <<<"$known"; then
-    ok "marketplace already added: $repo"
-  else
-    claude plugin marketplace add "$repo"
-  fi
-done < <(list_from "$DOTFILES/packages/claude-marketplaces.txt")
-
-installed=$(claude plugin list --json | jq -r '.[] | .id // .pluginId // empty')
-while IFS= read -r plugin; do
-  if grep -qxF "$plugin" <<<"$installed"; then
-    ok "plugin already installed: $plugin"
-  else
-    claude plugin install "$plugin"
-  fi
-done < <(list_from "$DOTFILES/packages/claude-plugins.txt")
+"$AI_DIR/plugins.sh"
 
 # Codex rewrites config.toml itself (project trust, hook hashes), so it is
 # copied once instead of linked.

@@ -18,7 +18,7 @@ settings on top, so `omarchy-update` keeps working and the repo stays small.
 | Keyboard / trackpad | French Mac AZERTY (also on the login screen), natural scrolling |
 | Editor | Zed, installed through Omarchy (omazed keeps its theme in sync) |
 | PHP / MySQL | [Lerd](https://lerd.sh): PHP 8.3, MySQL, `http://<project>.test` for every folder in `~/Sites` (HTTPS with `lerd secure`) |
-| AI | Claude Code, Codex (Omarchy's auto-updating stubs), my skills and plugins, herdr + herdr-plus, worktrunk |
+| AI | Claude Code, Codex (Omarchy's auto-updating stubs), my skills, commands and plugins from [dotfiles-ai](https://github.com/groenewege/dotfiles-ai) (shared with the Mac), herdr + herdr-plus, worktrunk |
 | Apps | 1Password, Gmail, Notion, Pinboard, GitHub, Mite and Mailpit (Lerd's mail catcher) web apps; HEY and Basecamp removed |
 | Browser | Chromium bookmarks kept in the repo (Chromium has no sync of its own) |
 | Git / SSH | ed25519 key, GitHub over SSH, signed commits; server list in a private file |
@@ -109,8 +109,6 @@ packages/                  plain lists, read by the scripts
   remove.txt               preinstalled packages to remove
   webapps.txt              web apps to install (Name | URL | icon …)
   webapps-remove.txt       preinstalled web apps to remove
-  claude-marketplaces.txt  Claude Code plugin marketplaces
-  claude-plugins.txt       Claude Code plugins
 scripts/
   05-hardware.sh           model-specific fixes (16" MacBook Pro 2019: screen on the Intel GPU)
   10-packages.sh           install pacman.txt and aur.txt
@@ -118,7 +116,7 @@ scripts/
   30-desktop.sh            Zed, 1Password, web apps, Gmail as mailto handler, Chromium bookmarks, login screen keyboard, theme
   40-link.sh               stow everything in stow/, hook into Omarchy-owned files
   50-dev.sh                Lerd, PHP 8.3, MySQL, park ~/Sites, global Composer tools
-  60-ai.sh                 skills, Claude plugins, Codex config, Lerd MCP, herdr plugin + integrations
+  60-ai.sh                 dotfiles-ai (instructions, skills, commands, Claude plugins), Codex config, Lerd MCP, herdr plugin + integrations
   70-ssh-github.sh         SSH key + agent, gh login, upload auth and signing key
   80-remote-access.sh      Tailscale, sshd (keys only, through Tailscale only), awake with the lid closed on the charger
 stow/<package>/            files laid out as in $HOME, symlinked with GNU stow
@@ -127,12 +125,10 @@ config/remote-access/      sshd and lid settings, public keys allowed to log in 
 config/sddm/               login screen (SDDM) keyboard layout, copied to /etc
 config/chromium/Bookmarks  Chromium bookmarks (the desktop step restores or saves them)
 config/macbook-pro-16/     boot option, udev rules and Hyprland GPU settings for MacBookPro16,1
-ai/AGENTS.md               shared instructions → ~/.claude/CLAUDE.md and ~/.codex/AGENTS.md
-ai/skills/                 skills for both Claude Code and Codex
-ai/skills-claude/          Claude-only variants
-ai/skills-codex/           Codex-only variants
 templates/                 files copied once instead of linked, and examples
 docs/                      first-install guide, cheat sheet, and the audit prompt for agents
+../dotfiles-ai/            separate repo, cloned by the ai step: AGENTS.md, skills, Claude commands
+                           and plugin lists, linked by its own install.sh (shared with the Mac)
 ```
 
 Every step checks before acting, so `./install.sh` can be run again at any
@@ -203,8 +199,8 @@ dotfiles             # cd into this repo
 | Remove a preinstall | add it to `packages/remove.txt` or `webapps-remove.txt` | `./install.sh --only cleanup` |
 | A config file | put it in `stow/<app>/` at its path under `$HOME` | `./install.sh --only link` |
 | An alias or function | edit `~/.config/bash/aliases.sh` / `functions.sh` (it's the repo file) | open a new terminal |
-| A skill | add a folder to `ai/skills/` | `./install.sh --only ai` |
-| A Claude plugin | add it to `packages/claude-plugins.txt` | `./install.sh --only ai` |
+| A skill or command | add it in `../dotfiles-ai` (see its README), commit and push | `./install.sh --only ai` |
+| A Claude plugin | add it to `../dotfiles-ai/plugins/claude-plugins.txt` | `./install.sh --only ai` |
 | A whole new step | add `scripts/NN-name.sh` (source `lib/common.sh`, keep it idempotent) | `./install.sh --only name` |
 
 ### Cheat sheet
@@ -394,7 +390,7 @@ Xdebug). It complements Laravel Boost, which works inside the app.
 
 We don't use `lerd mcp:enable-global`: it also configures Cursor, Gemini,
 Junie, Windsurf, VS Code and OpenCode, and writes its instructions into
-`~/.codex/AGENTS.md`, which is this repo's file. The skill comes with the lerd
+`~/.codex/AGENTS.md`, which is dotfiles-ai's file. The skill comes with the lerd
 binary, so `update.sh` regenerates it after `lerd update`.
 
 Some actions are destructive (restore a snapshot, drop a database, unlink a

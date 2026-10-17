@@ -3,7 +3,9 @@
 
 DOTFILES="${DOTFILES:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 BACKUP_DIR="${BACKUP_DIR:-$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)}"
-export DOTFILES BACKUP_DIR
+# The dotfiles-ai repo (agent instructions, skills, commands), next to this one.
+AI_DIR="${AI_DIR:-$(dirname "$DOTFILES")/dotfiles-ai}"
+export DOTFILES BACKUP_DIR AI_DIR
 
 log()  { printf '\n\033[1;34m==>\033[0m \033[1m%s\033[0m\n' "$*"; }
 ok()   { printf '  \033[32m✓\033[0m %s\n' "$*"; }
@@ -120,7 +122,7 @@ relink_if_replaced() {
 }
 
 # Lerd's skill (how to use its MCP server) for Claude Code and Codex. It ships
-# with the lerd binary, so it is generated, not kept in ai/skills/:
+# with the lerd binary, so it is generated, not kept in dotfiles-ai:
 # `lerd mcp:inject` writes it into a scratch folder and we copy it out.
 # (`lerd mcp:enable-global` would also install it, but it sets up every AI
 # client it knows and adds the same text to ~/.codex/AGENTS.md, a repo file.)

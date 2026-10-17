@@ -8,7 +8,8 @@ wrong, and fix it once I approve.
 
 Read `README.md` first, then every file the installer uses: `install.sh`,
 `update.sh`, `lib/common.sh`, `scripts/*`, `packages/*`, everything under
-`stow/`, `config/`, `templates/` and `ai/`. Don't trust comments or the README:
+`stow/`, `config/` and `templates/`, plus `install.sh` and `plugins.sh` of the
+dotfiles-ai repo next to this one. Don't trust comments or the README:
 check what the code actually does.
 
 ## Rules
