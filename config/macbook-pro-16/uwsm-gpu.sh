@@ -5,7 +5,7 @@
 # even when the AMD GPU happens to be ready first. Only set when the Intel GPU
 # really has the panel, so a boot entry without force_igd still gets a picture.
 # (Aquamarine still adds the AMD GPU when it appears later; monitors.lua
-# switches off its phantom eDP-2.)
+# switches off its phantom panel.)
 #
 # The external display ports are wired to the AMD GPU. To use an external
 # monitor, add a udev symlink for 0000:03:00.0 (see gpu.rules) and list it
