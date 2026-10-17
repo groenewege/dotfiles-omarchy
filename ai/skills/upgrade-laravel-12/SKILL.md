@@ -114,6 +114,8 @@ When a project pins a package to a **fork branch** (e.g. `"gazsp/baum": "dev-l11
 
 Read the pinned branch's own constraint before bumping: `gh api 'repos/<owner>/<repo>/contents/composer.json?ref=<branch>' --jq .content | base64 -d`. Some forks widen the existing branch instead of cutting a new one. For example, an `l11-compatibility` branch that requires `illuminate/* ^11|^12|^13` already resolves on L12, so when the fork has no `l12-compatibility` branch, keep that pin.
 
+**`dev-master`/`dev-main` pins backed by a `repositories` VCS entry are not candidates for a "swap `dev-*` for a stable release" pass.** Shift-review workflows tell you to replace `dev-*` constraints with a Packagist stable release when one exists. For a package whose source is the project's own VCS fork, that swap either fails to resolve, because the canonical fork has no matching tag, or quietly drops the fork's patches. Match each `dev-*` package's name against the `repositories` URLs first, and skip any that come from a fork. Then read the pinned branch's own constraint. An open-ended one (`illuminate/support >=5.5`) already resolves on L12, so leave the pin alone, even if the fork has a newer `l<N>-compatibility` branch for a *later* target (e.g. `l13-compatibility` with no `l12`). Moving to that branch early drags in a later major's changes.
+
 ## High Impact Changes
 
 ### Dependency Versions

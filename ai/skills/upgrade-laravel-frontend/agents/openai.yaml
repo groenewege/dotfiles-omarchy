@@ -1,0 +1,4 @@
+interface:
+  display_name: "Upgrade Laravel Frontend"
+  short_description: "Upgrade or repair Laravel Mix, Vite and npm builds"
+  default_prompt: "Use $upgrade-laravel-frontend to get this Laravel project's npm install and build working on a fresh machine."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Laravel Conventions"
+  short_description: "Cross-project Laravel conventions and gotchas"
+  default_prompt: "Use $laravel-conventions to check this Laravel code against my cross-project conventions."

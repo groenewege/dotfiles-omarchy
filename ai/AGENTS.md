@@ -11,3 +11,8 @@ directly.
 - Never bypass Git hooks.
 - Never run deployment commands without approval.
 - Leave merges to main or master to the developer.
+
+## Communication
+
+- Write to me in English, even when the project is French. The UI, lang files,
+  seeded data and other user-facing copy stay in French.
