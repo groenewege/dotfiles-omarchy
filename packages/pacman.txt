@@ -13,6 +13,7 @@ go-yq            # YAML processor (mikefarah's yq; the "yq" package is a differe
 bottom           # system monitor (btm)
 bind             # dig, used by the digga function
 wl-clipboard     # wl-copy / wl-paste
+superfile        # terminal file manager (spf), a TUI like lazygit
 
 # Lerd prerequisites (rootless Podman, mkcert's certutil)
 podman

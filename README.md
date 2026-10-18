@@ -19,7 +19,7 @@ settings on top, so `omarchy-update` keeps working and the repo stays small.
 | Editor | Zed, installed through Omarchy (omazed keeps its theme in sync) |
 | PHP / MySQL | [Lerd](https://lerd.sh): PHP 8.3, MySQL, `http://<project>.test` for every folder in `~/Sites` (HTTPS with `lerd secure`) |
 | AI | Claude Code, Codex (Omarchy's auto-updating stubs), my skills, commands and plugins from [dotfiles-ai](https://github.com/groenewege/dotfiles-ai) (shared with the Mac), herdr + herdr-plus, worktrunk |
-| Apps | 1Password, Gmail, Notion, Pinboard, GitHub, Mite and Mailpit (Lerd's mail catcher) web apps; HEY and Basecamp removed |
+| Apps | 1Password, Gmail, Notion, Pinboard, GitHub, Mite and Mailpit (Lerd's mail catcher) web apps; HEY, Basecamp, Google Photos, Google Messages and X removed, as are OBS Studio and Kdenlive |
 | Browser | Chromium bookmarks kept in the repo (Chromium has no sync of its own) |
 | Git / SSH | ed25519 key, GitHub over SSH, signed commits; server list in a private file |
 | Remote access | Tailscale, SSH server (keys only, through Tailscale only) for `ssh` and `herdr --remote` from the Mac |
