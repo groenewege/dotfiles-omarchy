@@ -145,3 +145,15 @@ fcd() {
     builtin cd -- "$dir" || return
 }
 [[ $- == *i* ]] && bind '"\C-g": "\C-e\C-ufcd\C-m"'
+
+# superfile: quitting with Q (not q) leaves this shell in the folder it was
+# browsing. spf writes a `cd '<dir>'` line to its lastdir file on Q.
+spf() {
+  local lastdir="${XDG_STATE_HOME:-$HOME/.local/state}/superfile/lastdir" status=0
+  command spf "$@" || status=$?
+  if [[ -f $lastdir ]]; then
+    . "$lastdir"
+    rm -f -- "$lastdir"
+  fi
+  return "$status"
+}

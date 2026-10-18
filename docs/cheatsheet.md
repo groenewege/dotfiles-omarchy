@@ -212,7 +212,8 @@ Zed's Linux keys are its macOS keys with Ctrl instead of Cmd.
 
 ## superfile
 
-`spf` opens a terminal file manager. `?` shows every key, `q` quits.
+`spf` opens a terminal file manager. `?` shows every key, `q` quits, and
+`Q` ★ quits into the folder you were browsing.
 
 | Keys | Does |
 |---|---|
@@ -270,7 +271,7 @@ Added by this repo (see `stow/bash/.config/bash/`):
 | AI | `c` (claude), `ccc` (claude --continue), `cxy` (codex without approvals) |
 | Projects | `setup-project [owner/repo]` (clone + full Lerd setup), `open-project [folder]` / `workon` (herdr, Zed and the site), `sites`, `dotfiles` |
 | Lerd | `tunnel` (`lerd share`), `phpserve` (plain `php -S` on port 8888) |
-| Files | `l` / `ll` (eza), `cat` (bat), `top` (btm), `mkd`, `zed`, `o` (open the folder), Ctrl+G (fuzzy cd) |
+| Files | `l` / `ll` (eza), `cat` (bat), `top` (btm), `about` (fastfetch), `mkd`, `zed`, `o` (open the folder), Ctrl+G (fuzzy cd), `spf` (superfile; Q quits into its folder) |
 | SSH | `copykey`, `sshconfig`, `removehost <host>`, `hostfile` |
 | Network | `myip`, `localip`, `flushdns`, `digga <domain>` |
 

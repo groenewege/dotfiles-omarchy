@@ -53,6 +53,7 @@ alias ll="eza -l --icons=auto --group-directories-first --hyperlink"
 alias cat="bat --style=plain --paging=never"
 alias top="btm"
 alias htop="btm"
+alias about="fastfetch"                   # system info, like Omarchy's About menu
 
 # SSH
 alias sshconfig='$EDITOR ~/.ssh/config'
