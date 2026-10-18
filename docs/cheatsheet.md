@@ -14,6 +14,7 @@ herdr's, and Zed's command palette (**Ctrl+Shift+P**) shows each command's key.
 - [herdr](#herdr)
 - [Zed](#zed)
 - [lazysql](#lazysql)
+- [superfile](#superfile)
 - [Claude Code](#claude-code)
 - [Shell](#shell)
 
@@ -208,6 +209,30 @@ Zed's Linux keys are its macOS keys with Ctrl instead of Cmd.
 | Ctrl+E | SQL editor (Ctrl+R runs the query) |
 | E | Export to CSV (~/Downloads) |
 | Y | Copy rows as SQL INSERTs, JSON, CSV… |
+
+## superfile
+
+`spf` opens a terminal file manager. `?` shows every key, `q` quits.
+
+| Keys | Does |
+|---|---|
+| j / k, ↑ / ↓ | Move down / up |
+| l / Enter, h / Backspace | Open the file or folder / go to the parent folder |
+| / | Search the current folder |
+| z | Jump to a folder with zoxide |
+| . | Show or hide dotfiles |
+| o / R | Sort options / reverse the sort |
+| v | Selection mode (J / K extend it, A selects all) |
+| Ctrl+N / Ctrl+R | New file (end the name with `/` for a folder) / rename |
+| Ctrl+C / Ctrl+X / Ctrl+V | Copy / cut / paste |
+| Ctrl+D / D | Move to the trash / delete permanently |
+| Ctrl+A / Ctrl+E | Compress / extract |
+| e / E | Open the file / the folder in `$EDITOR` |
+| c / Ctrl+P | Copy the folder's path / the file's path |
+| n / w | Open / close a file panel; Tab and Shift+← switch between them |
+| s / P | Focus the sidebar / pin the folder to it |
+| f | Show or hide the preview |
+| : | Run a shell command in the folder |
 
 ## Claude Code
 
