@@ -59,15 +59,19 @@ else
   ok "signing key added to GitHub"
 fi
 
-# The dotfiles repo is cloned over HTTPS (it is public); push over SSH from now on.
-remote=$(git -C "$DOTFILES" remote get-url origin 2>/dev/null || true)
-if [[ $remote == https://github.com/* ]]; then
-  repo=${remote#https://github.com/}
-  git -C "$DOTFILES" remote set-url origin "git@github.com:${repo%.git}.git"
-  ok "dotfiles remote now uses SSH: git@github.com:${repo%.git}.git"
-else
-  ok "dotfiles remote: ${remote:-none}"
-fi
+# The dotfiles repos are cloned over HTTPS (they are public); push over SSH from now on.
+for dir in "$DOTFILES" "$AI_DIR"; do
+  [[ -d $dir/.git ]] || continue
+  name=$(basename "$dir")
+  remote=$(git -C "$dir" remote get-url origin 2>/dev/null || true)
+  if [[ $remote == https://github.com/* ]]; then
+    repo=${remote#https://github.com/}
+    git -C "$dir" remote set-url origin "git@github.com:${repo%.git}.git"
+    ok "$name remote now uses SSH: git@github.com:${repo%.git}.git"
+  else
+    ok "$name remote: ${remote:-none}"
+  fi
+done
 
 # Commits are verified locally against this list (see dotfiles.gitconfig).
 ensure_line "$HOME/.ssh/allowed_signers" "$EMAIL $(cut -d' ' -f1,2 "$KEY.pub")"
