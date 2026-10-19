@@ -116,7 +116,7 @@ scripts/
   30-desktop.sh            Zed, 1Password, web apps, Gmail as mailto handler, Chromium bookmarks, login screen keyboard, theme
   40-link.sh               stow everything in stow/, hook into Omarchy-owned files
   50-dev.sh                Lerd, PHP 8.3, MySQL, park ~/Sites, global Composer tools
-  60-ai.sh                 dotfiles-ai (instructions, skills, commands, Claude plugins), Codex config, Lerd MCP, herdr plugin + integrations
+  60-ai.sh                 dotfiles-ai (instructions, skills, commands, Claude plugins), Codex config, Lerd MCP, herdr plugin + integrations, T3 Code settings
   70-ssh-github.sh         SSH key + agent, gh login, upload auth and signing key
   80-remote-access.sh      Tailscale, sshd (keys only, through Tailscale only), awake with the lid closed on the charger
 stow/<package>/            files laid out as in $HOME, symlinked with GNU stow
@@ -160,8 +160,11 @@ signing with `~/.ssh/id_ed25519`, which `ssh-github` creates.
    Installers (Lerd, worktrunk…) also append to `~/.bashrc`. That is fine:
    those lines stay on this machine and don't end up in the repo.
 
-Some files are **copied once** instead (`templates/codex-config.toml`), because
-the app rewrites them constantly.
+Some files are **copied once** instead (`templates/codex-config.toml`, T3 Code's
+`templates/t3code-*.json`), because the app rewrites them constantly. After
+changing T3 Code's settings, copy `~/.t3/userdata/settings.json` and
+`client-settings.json` over the templates (drop `onboardingCompletedAt`, so a new
+machine still gets the welcome wizard).
 
 Chromium's bookmarks are copied both ways by the `desktop` step: a machine
 without bookmarks gets `config/chromium/Bookmarks` (close Chromium first), and

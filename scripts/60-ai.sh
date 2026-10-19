@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # AI tooling: instructions, skills and commands for Claude Code and Codex
 # (from the dotfiles-ai repo), Claude plugins, Codex config, Lerd's MCP server,
-# herdr plugins and agent integrations.
+# herdr plugins and agent integrations, T3 Code settings.
 #
 # claude, codex and gh are Omarchy's mise stubs: the first call installs the
 # real tool, and `omarchy-update` keeps it up to date.
@@ -62,6 +62,21 @@ fi
 herdr integration install claude
 herdr integration install codex
 ok "herdr integrations installed"
+
+# T3 Code (t3code-bin, from aur.txt): default model, runtime mode and app
+# preferences. The app rewrites these files, so they are copied once instead of
+# linked. The client template has no onboardingCompletedAt, so the welcome
+# wizard still runs (agent check, project import).
+for name in settings client-settings; do
+  dest=$HOME/.t3/userdata/$name.json
+  if [[ -f $dest ]]; then
+    ok "T3 Code $name.json already exists; not overwriting"
+  else
+    mkdir -p "$(dirname "$dest")"
+    cp "$DOTFILES/templates/t3code-$name.json" "$dest"
+    ok "T3 Code $name.json created from template"
+  fi
+done
 
 # Claude Code and herdr may have rewritten settings.json instead of editing it.
 relink_if_replaced claude .claude/settings.json
