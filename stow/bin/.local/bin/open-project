@@ -6,17 +6,15 @@
 #   open-project            pick the folder from a list
 #
 # Opens the site in the browser (when Lerd serves the folder), the folder in the
-# editor (Zed), and the project's herdr workspace: the existing one if it is
-# open, else its herdr-plus project (setup-project writes one: claude, lazygit,
-# db and a shell), else a plain workspace in the folder. herdr gets a terminal
-# window if it has none.
+# editor (Zed), and the project in T3 Code (`t3 app`, which adds the folder as a
+# T3 project the first time). T3 Code is started if it isn't running.
 #
-# Each window goes to its own Omarchy workspace (herdr 1, editor 2, browser 3),
-# and you end up on herdr.
+# Each window goes to its own Omarchy workspace (T3 Code 1, editor 2, browser 3),
+# and you end up on T3 Code.
 set -euo pipefail
 
 SITES_DIR="$HOME/Sites"
-HERDR_WORKSPACE=1
+T3_WORKSPACE=1
 EDITOR_WORKSPACE=2
 BROWSER_WORKSPACE=3
 
@@ -49,99 +47,55 @@ fi
 # Editor: Omarchy's default (Zed).
 setsid omarchy-launch-editor "$dir" >/dev/null 2>&1 &
 
-# herdr
-herdr_running() { herdr status server 2>/dev/null | grep -q 'status: running'; }
-
-# Windows, from a snapshot of Hyprland's clients taken in $clients.
-clients=""
-
-# The window showing herdr: the terminal that a herdr client (not the server) runs in.
-herdr_window() {
-  local pid address
-  for pid in $(pgrep -x herdr); do
-    [[ $(ps -o args= -p "$pid") == *" server"* ]] && continue
-    while ((pid > 1)); do
-      address=$(jq -r --argjson pid "$pid" '.[] | select(.pid == $pid) | .address' <<<"$clients")
-      [[ -n $address ]] && { printf '%s\n' "$address"; return 0; }
-      pid=$(ps -o ppid= -p "$pid" | tr -d ' ')
-    done
+# T3 Code: `t3 app` asks the running desktop app to open the folder (it creates
+# the project and a thread when needed) and fails when the app isn't running.
+# Start the app then, and retry until it answers (wait up to 30 s).
+if ! t3 app "$dir" >/dev/null 2>&1; then
+  setsid uwsm-app -- t3code >/dev/null 2>&1 &
+  opened=false
+  for _ in {1..30}; do
+    sleep 0.5
+    t3 app "$dir" >/dev/null 2>&1 && { opened=true; break; }
   done
-  return 1
-}
-
-launched=false
-launch_herdr() {
-  setsid uwsm-app -- xdg-terminal-exec --dir="$dir" herdr >/dev/null 2>&1 &
-  launched=true
-}
-
-if ! herdr_running; then
-  launch_herdr
-  for _ in {1..50}; do herdr_running && break; sleep 0.2; done
-  herdr_running || die "herdr didn't start."
+  $opened || die "T3 Code didn't open $folder."
 fi
 
-# The herdr-plus project for this folder, by its working_dir.
-project=""
-if projects_dir="$(herdr plugin config-dir cloudmanic.herdr-plus 2>/dev/null)/projects" && [[ -d $projects_dir ]]; then
-  if file=$(grep -lsxF -e "working_dir = \"${dir/#"$HOME"/\~}\"" -e "working_dir = \"$dir\"" "$projects_dir"/*.toml | head -1) && [[ -n $file ]]; then
-    project=$(sed -nE 's/^name = "(.*)"$/\1/p' "$file" | head -1)
-  fi
-fi
-label=${project:-$folder}
-
-workspace=$(herdr workspace list | jq -r --arg label "$label" \
-  'first(.result.workspaces[] | select(.label == $label) | .workspace_id) // empty')
-if [[ -n $workspace ]]; then
-  herdr workspace focus "$workspace" >/dev/null
-elif [[ -n $project ]]; then
-  # herdr-plus isn't on PATH; it finds herdr through HERDR_SOCKET_PATH, which
-  # herdr only sets inside its own panes.
-  herdr_plus=$(compgen -G "$HOME/.config/herdr/plugins/github/cloudmanic.herdr-plus-*/bin/herdr-plus" | head -1) ||
-    die "herdr-plus isn't installed (./install.sh --only ai)."
-  HERDR_SOCKET_PATH=$(herdr status server | awk '/socket:/ { print $2 }') \
-    "$herdr_plus" open "$project" >/dev/null || die "herdr-plus couldn't open $project."
-else
-  herdr workspace create --cwd "$dir" --label "$folder" --focus >/dev/null
-fi
-
-clients=$(hyprctl clients -j)
-herdr_window >/dev/null || $launched || launch_herdr
-
-# The editor window (Zed opens the folder in its existing window), and the
-# browser window the site's tab went to: the browser's most recently used one.
-editor_window() {
-  jq -er 'map(select(.class | test("zed"; "i"))) | min_by(.focusHistoryID) | .address' <<<"$clients"
+# Windows, from a snapshot of Hyprland's clients taken in $clients. Zed opens
+# the folder in its existing window, and the site's tab goes to the browser's
+# most recently used window.
+clients=""
+# The most recently used window whose class matches the regex $1 (any case).
+window() {
+  jq -er --arg class "$1" \
+    'map(select(.class | test($class; "i"))) | min_by(.focusHistoryID) | .address' <<<"$clients"
 }
-browser_class=$(xdg-settings get default-web-browser 2>/dev/null || true)
+# xdg-settings answers omarchy-browser.desktop, Omarchy's launcher; this
+# answers the browser it launches (chromium.desktop).
+browser_class=$(omarchy-cmd-default-browser 2>/dev/null || true)
 browser_class=${browser_class%.desktop}
-browser_window() {
-  jq -er --arg class "$browser_class" \
-    'map(select(.class | ascii_downcase == ($class | ascii_downcase))) | min_by(.focusHistoryID) | .address' <<<"$clients"
-}
 
 move_window() { hyprctl dispatch "hl.dsp.window.move({ workspace = \"$2\", follow = false, window = \"address:$1\" })" >/dev/null; }
 
 # The windows appear asynchronously: move each one once it's there (wait up to 10 s).
-want_herdr=true want_editor=true want_browser=$site herdr_address=""
+want_t3=true want_editor=true want_browser=$site t3_address=""
 for _ in {1..50}; do
   clients=$(hyprctl clients -j)
-  if $want_herdr && herdr_address=$(herdr_window); then
-    move_window "$herdr_address" "$HERDR_WORKSPACE"; want_herdr=false
+  if $want_t3 && t3_address=$(window 't3code$'); then
+    move_window "$t3_address" "$T3_WORKSPACE"; want_t3=false
   fi
-  if $want_editor && address=$(editor_window); then
+  if $want_editor && address=$(window zed); then
     move_window "$address" "$EDITOR_WORKSPACE"; want_editor=false
   fi
-  if $want_browser && address=$(browser_window); then
+  if $want_browser && address=$(window "^$browser_class\$"); then
     move_window "$address" "$BROWSER_WORKSPACE"; want_browser=false
   fi
-  $want_herdr || $want_editor || $want_browser || break
+  $want_t3 || $want_editor || $want_browser || break
   sleep 0.2
 done
 
-# The browser raises its window a moment after lerd open returns; herdr goes
+# The browser raises its window a moment after lerd open returns; T3 Code goes
 # in front after that.
-if [[ -n $herdr_address ]]; then
+if [[ -n $t3_address ]]; then
   sleep 1
-  hyprctl dispatch "hl.dsp.focus({ window = \"address:$herdr_address\" })" >/dev/null
+  hyprctl dispatch "hl.dsp.focus({ window = \"address:$t3_address\" })" >/dev/null
 fi

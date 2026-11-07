@@ -5,9 +5,8 @@
 #   setup-project <git-url> [folder]    clone any git URL, then set up
 #   setup-project                       set up the project in the current folder
 #
-# Steps: check out develop (after cloning), herdr-plus project, .env from
-# .env.example, PHP 8.3 pin (unless the project picks a version), Lerd site
-# config (wizard the first time), composer install, lerd env, app key, migrate:fresh --seed,
+# Steps: check out develop (after cloning), .env from .env.example, PHP 8.3
+# pin (unless the project picks a version), Lerd site config (wizard the first time), composer install, lerd env, app key, migrate:fresh --seed,
 # test database (created; migrated and seeded when the tests expect it), storage:link,
 # npm install + build, boost:install (when laravel/boost is required), lerd open.
 # A failed npm step doesn't stop the setup: it is listed again at the end.
@@ -51,40 +50,6 @@ if (($#)); then
 fi
 
 [[ -f artisan ]] || die "No artisan file in $(pwd): not a Laravel project."
-
-# herdr-plus project (prefix+up in herdr): claude, lazygit, the database
-# (project-db) and a shell, in the project folder. Done first, so it's there even if a later step fails.
-step "herdr-plus project"
-project=$(basename "$PWD")
-working_dir=${PWD/#"$HOME"/\~}
-if projects_dir="$(herdr plugin config-dir cloudmanic.herdr-plus 2>/dev/null)/projects" && [[ -d $projects_dir ]]; then
-  if grep -qsxF -e "working_dir = \"$working_dir\"" -e "working_dir = \"$PWD\"" "$projects_dir"/*.toml; then
-    note "a project for $working_dir already exists, keeping it"
-  else
-    cat >"$projects_dir/$project.toml" <<EOF
-name = "$project"
-working_dir = "$working_dir"
-
-[[tabs]]
-name = "claude"
-command = "claude"
-
-[[tabs]]
-name = "lazygit"
-command = "lazygit"
-
-[[tabs]]
-name = "db"
-command = "project-db"
-
-[[tabs]]
-name = "terminal"
-EOF
-    note "added $project to herdr-plus projects"
-  fi
-else
-  note "herdr-plus isn't installed, skipping (./install.sh --only ai installs it)"
-fi
 
 # .env
 step ".env"

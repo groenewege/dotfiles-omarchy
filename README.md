@@ -208,7 +208,7 @@ dotfiles             # cd into this repo
 
 ### Cheat sheet
 
-Aliases, functions and keyboard shortcuts (Omarchy, terminals, herdr, Zed,
+Aliases, functions and keyboard shortcuts (Omarchy, terminals, T3 Code, herdr, Zed,
 Claude Code, and the ones this repo adds) are in
 [docs/cheatsheet.md](docs/cheatsheet.md).
 
@@ -271,10 +271,10 @@ The machine must be awake. On the charger, closing the lid no longer suspends it
 
 ### herdr-plus projects
 
-Project files (one per Laravel project, opened with prefix+up in herdr) are
-personal, so they aren't in the repo. `setup-project` creates one for each
-project it sets up (tabs: claude, lazygit, db, terminal). For anything else, start
-from `templates/herdr-project.toml`.
+Project files (opened with prefix+up in herdr) are personal, so they aren't in
+the repo. Projects open in T3 Code now (see [Working on a project](#working-on-a-project)),
+so nothing creates them any more; when you want one, start from
+`templates/herdr-project.toml`.
 
 ## Laravel with Lerd
 
@@ -293,7 +293,6 @@ setup-project                        # set up the project in the current folder
 
 1. Clone with `gh repo clone` (or `git clone` for a URL), unless you're already in the project.
    Then check out `develop` (staging and main/master deploy automatically), when the repo has one.
-   Either way, add a herdr-plus project for it (tabs: claude, lazygit, db, terminal), unless one exists.
 2. Copy `.env.example` to `.env` when there's no `.env` yet.
 3. `lerd isolate 8.3`, unless the project already picks a version
    (`.php-version`, or `php_version` in `.lerd.yaml`). Without it Lerd takes the
@@ -356,16 +355,16 @@ can't take arguments, hence the list.
 
 - the site in the browser (`lerd open`), when Lerd serves the folder;
 - the folder in the default editor (Zed);
-- the project's herdr workspace: the existing one when it's open, else its
-  herdr-plus project, else a plain workspace in the folder. herdr gets a
-  terminal window when it has none.
+- the project in T3 Code (`t3 app <folder>`), started first when it isn't
+  running. The first time, T3 Code adds the folder as a project, so there is
+  nothing to set up per project.
 
-Each goes to its own Omarchy workspace: herdr on 1, Zed on 2, the browser on 3
-(variables at the top of the script), and you end up on herdr.
+Each goes to its own Omarchy workspace: T3 Code on 1, Zed on 2, the browser on 3
+(variables at the top of the script), and you end up on T3 Code.
 
 ### The database
 
-`project-db` (the **db** tab of a herdr-plus project) opens the project's
+`project-db` (run in the project folder) opens the project's
 database in [lazysql](https://github.com/jorgerojas26/lazysql), a TUI like
 lazygit, using the `DB_*` settings in `.env` (with `127.0.0.1` for Lerd's
 `lerd-mysql` host). Dumps go through Lerd:

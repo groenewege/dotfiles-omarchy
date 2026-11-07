@@ -5,12 +5,14 @@ the MacBook keyboard. Rows marked ★ are added by this repo; the rest are
 Omarchy's or the app's defaults.
 
 Forgot one? **Super+K** searches every desktop shortcut, **Super+Ctrl+K** lists
-herdr's, and Zed's command palette (**Ctrl+Shift+P**) shows each command's key.
+herdr's, and the command palettes of T3 Code (**Ctrl+K**) and Zed
+(**Ctrl+Shift+P**) show each command's key.
 
 - [Mac habits](#mac-habits)
 - [Our own shortcuts](#our-own-shortcuts)
 - [Omarchy](#omarchy)
 - [Terminals](#terminals)
+- [T3 Code](#t3-code)
 - [herdr](#herdr)
 - [Zed](#zed)
 - [lazysql](#lazysql)
@@ -136,6 +138,54 @@ foot (Super+Return) and Ghostty (Super+Alt+Return):
 | Ctrl+Shift+C / V | Copy / paste (or Super+C / V) |
 | Ctrl+= / Ctrl+− | Bigger / smaller text |
 
+## T3 Code
+
+`open-project` / `workon` opens a project here. T3 Code's keys use Ctrl where
+the Mac app uses Cmd; Settings → Keybindings lists and changes them (saved in
+`~/.t3/userdata/keybindings.json`). Most of them don't fire while the built-in
+terminal has focus.
+
+Threads and the composer:
+
+| Keys | Does |
+|---|---|
+| Ctrl+Shift+N | New thread in the current project |
+| Ctrl+N or Ctrl+Shift+O | New thread, picking the project (Ctrl+Alt+N: without a project) |
+| Ctrl+1…9 | Go to thread 1…9 in the sidebar |
+| Ctrl+Shift+[ / ] | Previous / next thread |
+| Ctrl+F | Find in the thread |
+| Ctrl+Shift+P / Ctrl+Shift+S | Pin / settle the thread |
+| Ctrl+Shift+M | Pick the model |
+| Ctrl+Shift+E / Ctrl+Shift+A | Reasoning effort / runtime mode (approvals) |
+| Ctrl+Shift+X / Ctrl+Shift+G | Workspace (local or a new worktree) / branch |
+| Ctrl+Enter | While a turn runs: the other of queue / steer. In a new thread: start it in the background |
+| Ctrl+Alt+Enter | Send and start a new thread |
+| Ctrl+Shift+Enter / Alt+↑ | Send the first queued message as a steer / edit the last queued one |
+| Ctrl+S | Stash the draft |
+
+Panels and navigation:
+
+| Keys | Does |
+|---|---|
+| Ctrl+K | Command palette |
+| Ctrl+P / Ctrl+Shift+F | Open a file / search the project |
+| Ctrl+B | Sidebar (Ctrl+Shift+B: thread panel, Ctrl+Alt+B: right panel) |
+| Ctrl+D | Diff |
+| Ctrl+J | Terminal |
+| Ctrl+Shift+J | Preview (focused: Ctrl+R reloads, Ctrl+L edits the URL) |
+| Ctrl+O | Open the project in the favourite editor (Zed) |
+| Ctrl+W / Ctrl+Shift+T | Close the right-panel tab / reopen it |
+| Ctrl+[ / ] | Back / forward |
+| Ctrl+U | Usage |
+
+In the terminal: Ctrl+D / Ctrl+Shift+D split side by side / stacked, Ctrl+N
+new terminal, Ctrl+W close it.
+
+On the French keyboard, T3 Code reads keys other than letters by where they sit
+on a US keyboard: Ctrl+1…9 is Ctrl with the number-row key (no Shift), and
+`[` / `]` are the **^** and **$** keys right of P (so Ctrl+Shift+$ is the next
+thread).
+
 ## herdr
 
 The prefix is **Ctrl+Space**: press it, release, then press the key. Omarchy
@@ -193,7 +243,7 @@ Zed's Linux keys are its macOS keys with Ctrl instead of Cmd.
 
 ## lazysql
 
-`project-db`, or the **db** tab in herdr. `?` shows every key, `q` quits.
+`project-db` in the project folder. `?` shows every key, `q` quits.
 
 | Keys | Does |
 |---|---|
@@ -269,7 +319,7 @@ Added by this repo (see `stow/bash/.config/bash/`):
 | Git | `commit [msg]` (no message: Claude writes one), `gll`, `nah`, `uncommit`, `push`, `pull`, `gpo`, `git-prune-local`, `clone owner/repo`, `lg` |
 | Databases | `db create\|drop\|refresh\|list <name>` (Lerd MySQL), `project-db [export\|import <file>]` (lazysql, dumps) |
 | AI | `c` (claude), `ccc` (claude --continue), `cxy` (codex without approvals) |
-| Projects | `setup-project [owner/repo]` (clone + full Lerd setup), `open-project [folder]` / `workon` (herdr, Zed and the site), `sites`, `dotfiles` |
+| Projects | `setup-project [owner/repo]` (clone + full Lerd setup), `open-project [folder]` / `workon` (T3 Code, Zed and the site), `sites`, `dotfiles` |
 | Lerd | `tunnel` (`lerd share`), `phpserve` (plain `php -S` on port 8888) |
 | Files | `l` / `ll` (eza), `cat` (bat), `top` (btm), `about` (fastfetch), `mkd`, `zed`, `o` (open the folder), Ctrl+G (fuzzy cd), `spf` (superfile; Q quits into its folder) |
 | SSH | `copykey`, `sshconfig`, `removehost <host>`, `hostfile` |
