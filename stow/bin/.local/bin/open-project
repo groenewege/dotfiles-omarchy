@@ -49,9 +49,11 @@ setsid omarchy-launch-editor "$dir" >/dev/null 2>&1 &
 
 # T3 Code: `t3 app` asks the running desktop app to open the folder (it creates
 # the project and a thread when needed) and fails when the app isn't running.
-# Start the app then, and retry until it answers (wait up to 30 s).
+# Start the app then, and retry until it answers (wait up to 30 s). It's
+# Omarchy's self-updating AppImage, started through its launcher entry; on
+# launch it also rewrites ~/.t3/bin/t3, which `t3` links to.
 if ! t3 app "$dir" >/dev/null 2>&1; then
-  setsid uwsm-app -- t3code >/dev/null 2>&1 &
+  setsid uwsm-app -- gtk-launch t3code >/dev/null 2>&1 &
   opened=false
   for _ in {1..30}; do
     sleep 0.5

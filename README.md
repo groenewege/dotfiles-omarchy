@@ -116,7 +116,7 @@ scripts/
   30-desktop.sh            Zed, 1Password, web apps, Gmail as mailto handler, Chromium bookmarks, login screen keyboard, theme
   40-link.sh               stow everything in stow/, hook into Omarchy-owned files
   50-dev.sh                Lerd, PHP 8.3, MySQL, park ~/Sites, global Composer tools
-  60-ai.sh                 dotfiles-ai (instructions, skills, commands, Claude plugins), Codex config, Lerd MCP, herdr plugin + integrations, T3 Code settings
+  60-ai.sh                 dotfiles-ai (instructions, skills, commands, Claude plugins), Codex config, Lerd MCP, herdr plugin + integrations, T3 Code
   70-ssh-github.sh         SSH key + agent, gh login, upload auth and signing key
   80-remote-access.sh      Tailscale, sshd (keys only, through Tailscale only), awake with the lid closed on the charger
 stow/<package>/            files laid out as in $HOME, symlinked with GNU stow
@@ -427,6 +427,6 @@ Planned, not built yet. The tools are already installed:
   template: copy ignored files, `lerd worktree setup`, a `_testing` database,
   pint and tests before merge.
 - A `develop` default-branch helper (`wt config state default-branch set develop`).
-- Optional: the worktrunk Claude plugin, T3 Code (`omarchy-install-ai-t3-code`),
-  Tailscale + `lerd lan:share` for remote access.
+- Optional: the worktrunk Claude plugin, Tailscale + `lerd lan:share` for
+  remote access.
 - A Linux stand-in for Tower (lazygit / Zed's git panel).

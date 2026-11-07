@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # AI tooling: instructions, skills and commands for Claude Code and Codex
 # (from the dotfiles-ai repo), Claude plugins, Codex config, Lerd's MCP server,
-# herdr plugins and agent integrations, T3 Code settings.
+# herdr plugins and agent integrations, T3 Code (app and settings).
 #
 # claude, codex and gh are Omarchy's mise stubs: the first call installs the
 # real tool, and `omarchy-update` keeps it up to date.
@@ -63,10 +63,11 @@ herdr integration install claude
 herdr integration install codex
 ok "herdr integrations installed"
 
-# T3 Code (t3code-bin, from aur.txt): default model, runtime mode and app
-# preferences. The app rewrites these files, so they are copied once instead of
-# linked. The client template has no onboardingCompletedAt, so the welcome
-# wizard still runs (agent check, project import).
+# T3 Code settings: default model, runtime mode and app preferences. The app
+# rewrites these files, so they are copied once instead of linked. The client
+# template has no onboardingCompletedAt, so the welcome wizard still runs (agent
+# check, project import). Copied before the install below, which sets the theme
+# in settings.json.
 for name in settings client-settings; do
   dest=$HOME/.t3/userdata/$name.json
   if [[ -f $dest ]]; then
@@ -77,6 +78,14 @@ for name in settings client-settings; do
     ok "T3 Code $name.json created from template"
   fi
 done
+
+# T3 Code itself: Omarchy's self-updating AppImage (it replaced the t3code-bin
+# package in November 2026). The installer asks for sudo (fuse3).
+if [[ -f $HOME/.local/share/t3code/T3-Code.AppImage ]]; then
+  ok "T3 Code already installed"
+else
+  omarchy-install-ai-t3-code stable --no-launch
+fi
 
 # Claude Code and herdr may have rewritten settings.json instead of editing it.
 relink_if_replaced claude .claude/settings.json
